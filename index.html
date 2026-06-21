@@ -318,6 +318,65 @@
     font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#d3d7dd;
   }
 
+  /* ---------- PRICING ---------- */
+  .pricing-section{
+    padding:64px 28px 80px;
+    max-width:1080px;margin:0 auto;
+  }
+  .pricing-section .section-eyebrow{margin-bottom:10px;}
+  .pricing-section h2{font-size:clamp(24px,3vw,32px);margin-bottom:6px;}
+  .pricing-section p.sub{
+    text-transform:none;font-weight:400;color:var(--slate);font-size:15px;margin-bottom:32px;max-width:560px;
+  }
+  .price-grid{
+    display:grid;grid-template-columns:1fr;gap:1px;
+    background:var(--line-dark);border:1px solid var(--line-dark);
+  }
+  @media(min-width:680px){.price-grid{grid-template-columns:repeat(2,1fr);}}
+  .price-card{
+    background:var(--card-bg);
+    padding:36px 30px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .price-card.featured{
+    background:var(--asphalt);
+  }
+  .price-card .zone{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;
+    text-transform:uppercase;color:var(--asphalt);letter-spacing:0.01em;
+  }
+  .price-card.featured .zone{color:var(--amber);}
+  html[data-lang="zh"] .price-card .zone{text-transform:none;font-family:'Noto Sans SC',sans-serif;}
+  .price-card .amount{
+    font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:600;color:var(--asphalt);
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .price-card.featured .amount{color:var(--off-white);}
+  .price-card .amount .currency{font-size:18px;color:var(--slate);}
+  .price-card.featured .amount .currency{color:#9aa1ad;}
+  .price-card .amount .from{font-size:16px;color:var(--slate);font-family:'Inter',sans-serif;font-weight:500;}
+  .price-card.featured .amount .from{color:#9aa1ad;}
+  .price-card .desc{font-size:14px;color:var(--slate);}
+  .price-card.featured .desc{color:#c7ccd3;}
+  .price-card .sub-detail{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--amber-bright);
+    background:rgba(232,145,45,0.1);border-left:2px solid var(--amber);
+    padding:8px 10px;margin-top:2px;
+  }
+  .price-card .quote-btn{
+    margin-top:10px;align-self:flex-start;
+    background:var(--amber);color:var(--asphalt);border:none;
+    padding:12px 22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+    text-transform:uppercase;letter-spacing:0.02em;cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  html[data-lang="zh"] .price-card .quote-btn{text-transform:none;}
+  .price-card .quote-btn:hover{background:var(--amber-bright);}
+  .price-note{
+    margin-top:24px;font-size:13.5px;color:var(--slate);
+    border-left:3px solid var(--amber);padding-left:14px;
+  }
+
   /* ---------- FOOTER ---------- */
   footer{
     background:var(--asphalt);color:#9aa1ad;
@@ -511,6 +570,29 @@
   </div>
 </section>
 
+<section class="pricing-section" id="pricing">
+  <div class="section-eyebrow" data-i18n="pricingEyebrow">Pricing</div>
+  <h2 data-i18n="pricingTitle">What it costs</h2>
+  <p class="sub" data-i18n="pricingSub">Airport runs are priced per person. Every other trip gets a free quote by text.</p>
+
+  <div class="price-grid">
+    <div class="price-card">
+      <span class="zone" data-i18n="priceAirportLabel">Airport transfer</span>
+      <span class="amount"><span class="currency">$</span>80<span class="from" data-i18n="perPersonWord">/person</span></span>
+      <span class="desc" data-i18n="priceAirportDesc">Usually $80–$90 per person depending on area</span>
+      <span class="sub-detail" data-i18n="priceAirportExtra">+$10 per extra person</span>
+    </div>
+    <div class="price-card featured">
+      <span class="zone" data-i18n="priceQuoteLabel">All other trips</span>
+      <span class="amount" data-i18n="priceQuoteAmount">Free quote</span>
+      <span class="desc" data-i18n="priceQuoteDesc">Text your pickup and drop-off — John will reply with a price.</span>
+      <button type="button" class="quote-btn" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})" data-i18n="priceQuoteBtn">Get a quote</button>
+    </div>
+  </div>
+
+  <p class="price-note" data-i18n="pricingNote">Final price depends on distance, time of day, and number of passengers — John will confirm the total when he confirms your booking.</p>
+</section>
+
 <footer>
   <div class="footer-inner">
     <div class="brand">John's Shuttle</div>
@@ -520,7 +602,7 @@
     </div>
   </div>
   <div class="footer-bottom" data-i18n="footerBottom">
-    © 2026 John's Shuttle. 
+    © 2026 John's Shuttle.
   </div>
 </footer>
 
@@ -576,6 +658,18 @@
       area6: 'Events &amp; functions',
       area7: 'Medical appointments',
       area8: 'Interstate on request',
+      pricingEyebrow: 'Pricing',
+      pricingTitle: 'What it costs',
+      pricingSub: 'Airport runs are priced per person. Every other trip gets a free quote by text.',
+      priceAirportLabel: 'Airport transfer',
+      perPersonWord: '/person',
+      priceAirportDesc: 'Usually $80–$90 per person depending on area',
+      priceAirportExtra: '+$10 per extra person',
+      priceQuoteLabel: 'All other trips',
+      priceQuoteAmount: 'Free quote',
+      priceQuoteDesc: "Text your pickup and drop-off — John will reply with a price.",
+      priceQuoteBtn: 'Get a quote',
+      pricingNote: 'Final price depends on distance, time of day, and number of passengers — John will confirm the total when he confirms your booking.',
       footerCall: '📞 Call: 0433 159 888',
       footerText: '💬 Text: 0433 159 888',
       footerBottom: '© 2026 John\'s Shuttle. Placeholder PayID and bank name — replace with your real details before going live.',
@@ -638,6 +732,18 @@
       area6: '活动及庆典',
       area7: '医疗预约',
       area8: '州际接送（需提前咨询）',
+      pricingEyebrow: '价格',
+      pricingTitle: '收费标准',
+      pricingSub: '机场接送按人数收费。其他所有行程均可发短信免费获取报价。',
+      priceAirportLabel: '机场接送',
+      perPersonWord: '/人',
+      priceAirportDesc: '通常每人 $80–$90，视地区而定',
+      priceAirportExtra: '每增加一人 +$10',
+      priceQuoteLabel: '其他所有行程',
+      priceQuoteAmount: '免费报价',
+      priceQuoteDesc: '发短信告知上车地点和目的地 — John 会回复报价。',
+      priceQuoteBtn: '获取报价',
+      pricingNote: '最终价格视距离、出行时间及乘客人数而定 — John 会在确认预订时告知最终费用。',
       footerCall: '📞 致电：0433 159 888',
       footerText: '💬 短信：0433 159 888',
       footerBottom: '© 2026 John\'s Shuttle。PayID 和银行名称为示例信息 — 上线前请替换为真实信息。',
