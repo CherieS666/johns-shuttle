@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>John's Shuttle — Book Your Ride</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --asphalt:#1B2430;
@@ -17,7 +19,6 @@
     --slate:#5C6470;
     --line:rgba(247,245,240,0.12);
     --line-dark:rgba(27,36,48,0.12);
-    --green:#2F7A4D;
     --card-bg:#FFFFFF;
   }
 
@@ -33,63 +34,25 @@
     overflow-x:hidden;
   }
 
-  h1,h2,h3,.display{
+  h1,h2,h3{
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    letter-spacing:0.01em;
-    color:var(--asphalt);
     text-transform:uppercase;
   }
 
-  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
 
-  /* Chinese text needs its own face — Barlow Condensed and uppercase have no CJK equivalent */
-  html[data-lang="zh"] h1,
-  html[data-lang="zh"] h2,
-  html[data-lang="zh"] h3,
-  html[data-lang="zh"] .display{
-    font-family:'Noto Sans SC',sans-serif;
-    text-transform:none;
-    letter-spacing:0;
-  }
-  html[data-lang="zh"] body{
-    font-family:'Noto Sans SC',sans-serif;
-  }
-  html[data-lang="zh"] .eyebrow,
-  html[data-lang="zh"] .section-eyebrow,
-  html[data-lang="zh"] label{
-    text-transform:none;
-    letter-spacing:0.02em;
-  }
-  html[data-lang="zh"] .btn-sms,
-  html[data-lang="zh"] .btn-call{
-    font-family:'Noto Sans SC',sans-serif;
-    text-transform:none;
-    font-weight:600;
-  }
-
-  /* ---------- LANGUAGE TOGGLE ---------- */
+  /* ---------- LANGUAGE ---------- */
   .lang-toggle{
     display:flex;border:1px solid var(--amber);
   }
   .lang-toggle button{
     background:transparent;border:none;color:var(--amber);
-    font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
-    padding:8px 14px;cursor:pointer;transition:all 0.2s ease;
+    font-family:'JetBrains Mono',monospace;
+    padding:8px 14px;cursor:pointer;
   }
   .lang-toggle button.active{
     background:var(--amber);color:var(--asphalt);
-  }
-  .lang-toggle button:not(.active):hover{
-    background:rgba(232,145,45,0.15);
-  }
-
-  a{color:inherit;text-decoration:none;}
-
-  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
-
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
   }
 
   .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
@@ -100,279 +63,187 @@
     border-bottom:3px solid var(--amber);
   }
   .nav{
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;justify-content:space-between;align-items:center;
     padding:18px 28px;max-width:1080px;margin:0 auto;
   }
   .brand{
     display:flex;align-items:center;gap:10px;
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;
-    color:var(--off-white);text-transform:uppercase;letter-spacing:0.02em;
+    font-family:'Barlow Condensed';
+    font-size:24px;color:var(--off-white);
   }
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);}
-  .header-call{
-    display:flex;align-items:center;gap:10px;
-    color:var(--off-white);font-family:'JetBrains Mono',monospace;font-size:14px;
-  }
+
   .header-call a{
-    display:flex;align-items:center;gap:7px;
-    border:1px solid var(--amber);color:var(--amber);
-    padding:8px 14px;font-size:13.5px;font-weight:600;
-    transition:all 0.2s ease;
+    border:1px solid var(--amber);
+    color:var(--amber);
+    padding:8px 14px;
   }
-  .header-call a:hover{background:var(--amber);color:var(--asphalt);}
-  .nav-right{display:flex;align-items:center;gap:14px;}
 
   /* ---------- HERO ---------- */
   .hero{
     background:var(--asphalt);
     color:var(--off-white);
-    padding:60px 28px 50px;
-    position:relative;
+    padding:60px 28px;
   }
-  .hero-inner{max-width:1080px;margin:0 auto;}
+  .hero-inner{max-width:1080px;margin:auto;}
+
   .eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:0.12em;
-    text-transform:uppercase;color:var(--amber);margin-bottom:16px;display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono';
+    color:var(--amber);
+    font-size:12px;
+    margin-bottom:16px;
   }
-  .eyebrow::before{content:'';width:22px;height:1px;background:var(--amber);}
+
   .hero h1{
-    font-size:clamp(34px,5.5vw,54px);
-    color:var(--off-white);
-    line-height:1.05;margin-bottom:16px;
+    font-size:clamp(34px,5vw,54px);
+    line-height:1.1;
   }
   .hero h1 span{color:var(--amber);}
-  .hero p.lede{
-    font-family:'Inter',sans-serif;text-transform:none;font-weight:400;
-    font-size:17px;color:#c7ccd3;max-width:480px;margin-bottom:0;
-  }
 
-  /* ---------- ROUTE LINE (signature element) ---------- */
+  .lede{color:#c7ccd3;max-width:500px;}
+
+  /* ---------- ROUTE ---------- */
   .route-line{
-    display:flex;align-items:center;gap:0;
-    margin:36px 0 6px;
+    display:flex;align-items:center;margin-top:30px;
     max-width:560px;
   }
-  .route-point{
-    display:flex;flex-direction:column;gap:4px;min-width:0;flex-shrink:0;
-  }
-  .route-point .dot{
-    width:14px;height:14px;border-radius:50%;
-    border:2px solid var(--amber);background:var(--asphalt);
-    flex-shrink:0;
-  }
-  .route-point.filled .dot{background:var(--amber);}
-  .route-label{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;
-    text-transform:uppercase;color:#8b92a0;
-  }
-  .route-value{
-    font-family:'Inter',sans-serif;font-size:14px;color:var(--off-white);font-weight:500;
-    max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    min-height:20px;
-  }
-  .route-track{
-    flex:1;height:2px;
-    background-image:linear-gradient(to right, var(--amber) 0%, var(--amber) 50%, transparent 50%);
-    background-size:14px 2px;
-    background-repeat:repeat-x;
-    margin:0 14px;
-    position:relative;
-    top:-14px;
-    opacity:0.5;
-  }
+  .route-point{flex:1;}
+  .route-label{font-size:11px;color:#8b92a0;}
+  .route-value{color:white;}
 
-  /* ---------- TRUST STRIP ---------- */
+  /* ---------- TRUST ---------- */
   .trust{
     background:var(--asphalt-deep);
-    border-top:1px solid var(--line);
     padding:16px 0;
   }
   .trust .wrap{
-    display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;
-    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.03em;
-    color:#9aa1ad;
+    display:flex;gap:14px;flex-wrap:wrap;
+    font-size:12px;color:#9aa1ad;
   }
-  .trust span{display:flex;align-items:center;gap:8px;}
-  .trust span::before{content:'●';color:var(--amber);font-size:8px;}
 
-  /* ---------- BOOKING SECTION ---------- */
+  /* ---------- BOOKING ---------- */
   .booking-section{
-    padding:64px 28px 80px;
-    max-width:1080px;margin:0 auto;
-  }
-  .booking-grid{
-    display:grid;grid-template-columns:1fr;gap:40px;
-  }
-  @media(min-width:880px){
-    .booking-grid{grid-template-columns:1.15fr 0.85fr;align-items:start;}
+    padding:64px 28px;
+    max-width:1080px;margin:auto;
   }
 
-  .section-eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:0.1em;
-    text-transform:uppercase;color:var(--amber);margin-bottom:10px;
-  }
-  .booking-grid h2{font-size:clamp(24px,3vw,32px);margin-bottom:6px;}
-  .booking-grid p.sub{
-    text-transform:none;font-weight:400;color:var(--slate);font-size:15px;margin-bottom:28px;
-  }
-
-  /* form card */
   .form-card{
-    background:var(--card-bg);
-    border:1px solid var(--line-dark);
+    background:white;
+    padding:28px;
     border-top:4px solid var(--amber);
-    padding:32px 28px;
   }
-  .field-group{margin-bottom:20px;}
-  .field-row{display:grid;grid-template-columns:1fr;gap:20px;}
-  @media(min-width:520px){.field-row{grid-template-columns:1fr 1fr;}}
-  label{
-    display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;
-    letter-spacing:0.05em;text-transform:uppercase;color:var(--slate);margin-bottom:7px;
-  }
-  label .req{color:var(--amber);}
-  input, select, textarea{
-    width:100%;border:1px solid #d8d4cb;background:#fcfbf8;
-    padding:12px 14px;font-family:'Inter',sans-serif;font-size:15px;color:var(--asphalt);
-    transition:border-color 0.2s ease;
-  }
-  input:focus, select:focus, textarea:focus{
-    outline:none;border-color:var(--amber);background:#fff;
-  }
-  input::placeholder{color:#a8a39a;}
 
-  .submit-row{
-    margin-top:28px;padding-top:24px;border-top:1px solid var(--line-dark);
-    display:flex;flex-direction:column;gap:12px;
+  input,textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
   }
+
   .btn-sms{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    background:var(--amber);color:var(--asphalt);
-    padding:16px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;
-    text-transform:uppercase;letter-spacing:0.02em;
-    border:none;cursor:pointer;
-    transition:background 0.2s ease, transform 0.15s ease;
+    background:var(--amber);
+    padding:16px;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
   }
-  .btn-sms:hover{background:var(--amber-bright);transform:translateY(-1px);}
-  .btn-call{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    background:transparent;border:1.5px solid var(--asphalt);color:var(--asphalt);
-    padding:14px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;
-    text-transform:uppercase;letter-spacing:0.02em;cursor:pointer;
-    transition:all 0.2s ease;
-  }
-  .btn-call:hover{background:var(--asphalt);color:var(--off-white);}
-  .form-note{
-    font-size:13px;color:var(--slate);text-align:center;margin-top:4px;
-  }
-  .form-note .mono{color:var(--asphalt);}
 
-  /* side panel: how it works + payment */
+  .btn-call{
+    border:1px solid var(--asphalt);
+    padding:14px;
+    background:none;
+  }
+
+  /* ---------- SIDE ---------- */
   .side-card{
-    background:var(--asphalt);color:var(--off-white);
-    padding:28px 26px;margin-bottom:24px;
+    background:var(--asphalt);
+    color:white;
+    padding:24px;
+    margin-bottom:20px;
   }
-  .side-card h3{color:var(--amber);font-size:18px;margin-bottom:18px;}
-  .steps{display:flex;flex-direction:column;gap:16px;}
-  .step{display:flex;gap:14px;align-items:flex-start;}
+
   .step-num{
-    font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--asphalt);
-    background:var(--amber);width:24px;height:24px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:600;
+    background:var(--amber);
+    color:var(--asphalt);
+    width:22px;height:22px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
-  .step-text{font-size:14.5px;color:#d3d7dd;}
-  .step-text strong{color:var(--off-white);}
 
   .pay-card{
-    background:var(--card-bg);border:1px solid var(--line-dark);padding:26px;
+    background:white;
+    padding:24px;
   }
-  .pay-card h3{font-size:17px;margin-bottom:6px;color:var(--asphalt);}
-  .pay-card p.sub{font-size:13.5px;margin-bottom:18px;}
-  .payid-box{
-    background:#f5f2ea;border:1px dashed #c7c1b3;padding:16px;
-    display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
-  }
-  .payid-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
-  .payid-row .k{font-family:'JetBrains Mono',monospace;font-size:11.5px;text-transform:uppercase;color:var(--slate);letter-spacing:0.04em;}
-  .payid-row .v{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--asphalt);font-weight:600;}
-  .pay-note{font-size:13px;color:var(--slate);}
-  .pay-note strong{color:var(--asphalt);}
 
-  /* ---------- ROUTES / AREAS ---------- */
+  .payid-box{
+    border:1px dashed #ccc;
+    padding:12px;
+    background:#f7f3ea;
+  }
+
+  /* ---------- AREAS ---------- */
   .areas-section{
-    background:var(--asphalt-deep);color:var(--off-white);
-    padding:64px 28px;
+    background:var(--asphalt-deep);
+    color:white;
+    padding:60px 28px;
   }
-  .areas-inner{max-width:1080px;margin:0 auto;}
-  .areas-inner h2{color:var(--off-white);font-size:clamp(22px,3vw,30px);margin-bottom:10px;}
-  .areas-inner p.sub{
-    text-transform:none;font-weight:400;color:#9aa1ad;font-size:15px;margin-bottom:32px;max-width:500px;
-  }
+
   .area-list{
-    display:grid;grid-template-columns:repeat(2,1fr);gap:0;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
     border:1px solid var(--line);
   }
-  @media(min-width:640px){.area-list{grid-template-columns:repeat(4,1fr);}}
-  .area-item{
-    padding:18px 16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#d3d7dd;
-  }
 
+  .area-item{
+    padding:16px;
+    border:1px solid var(--line);
+  }
 
   /* ---------- FOOTER ---------- */
   footer{
-    background:var(--asphalt);color:#9aa1ad;
-    padding:40px 28px 24px;border-top:3px solid var(--amber);
-  }
-  .footer-inner{
-    max-width:1080px;margin:0 auto;
-    display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center;
-  }
-  .footer-inner .brand{font-size:19px;}
-  .footer-contact{
-    display:flex;gap:24px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:13px;
-  }
-  .footer-contact a:hover{color:var(--amber);}
-  .footer-bottom{
-    max-width:1080px;margin:28px auto 0;padding-top:18px;border-top:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6b7280;
+    background:var(--asphalt);
+    color:#9aa1ad;
+    padding:40px 28px;
+    border-top:3px solid var(--amber);
   }
 </style>
 </head>
+
 <body>
 
 <header>
   <div class="nav">
     <div class="brand"><span class="dot"></span>John's Shuttle</div>
-    <div class="nav-right">
-      <div class="lang-toggle">
-        <button type="button" id="langEn" class="active">EN</button>
-        <button type="button" id="langZh">中文</button>
-      </div>
-      <div class="header-call">
-        <a href="tel:0433159888">📞 0433 159 888</a>
-      </div>
+    <div class="lang-toggle">
+      <button id="langEn" class="active">EN</button>
+      <button id="langZh">中文</button>
+    </div>
+    <div class="header-call">
+      <a href="tel:0433159888">📞 0433 159 888</a>
     </div>
   </div>
 </header>
 
 <section class="hero">
   <div class="hero-inner">
-    <div class="eyebrow" data-i18n="eyebrow">Local shuttle service</div>
-    <h1 data-i18n-html="heroTitle">Door to door.<br><span>Booked in one text.</span></h1>
-    <p class="lede" data-i18n="heroLede">Fill in your pickup and drop-off below. Tap one button to send the booking straight to John's phone — no account, no app.</p>
+    <div class="eyebrow" data-i18n="eyebrow"></div>
 
-    <div class="route-line" aria-hidden="true">
-      <div class="route-point">
-        <span class="dot"></span>
-        <span class="route-label" data-i18n="pickupLabel">Pickup</span>
-        <span class="route-value" id="previewPickup">—</span>
+    <h1 data-i18n-html="heroTitle"></h1>
+
+    <p class="lede" data-i18n="heroLede"></p>
+
+    <div class="route-line">
+      <div>
+        <div class="route-label" data-i18n="pickupLabel"></div>
+        <div class="route-value" id="previewPickup">—</div>
       </div>
-      <div class="route-track"></div>
-      <div class="route-point">
-        <span class="dot"></span>
-        <span class="route-label" data-i18n="dropoffLabel">Drop-off</span>
-        <span class="route-value" id="previewDropoff">—</span>
+
+      <div style="flex:1"></div>
+
+      <div>
+        <div class="route-label" data-i18n="dropoffLabel"></div>
+        <div class="route-value" id="previewDropoff">—</div>
       </div>
     </div>
   </div>
@@ -380,439 +251,109 @@
 
 <div class="trust">
   <div class="wrap">
-    <span data-i18n="trust1">Booking goes direct to John — 0433 159 888</span>
-    <span data-i18n="trust2">Pay by PayID or on the day</span>
-    <span data-i18n="trust3">Same-day bookings welcome</span>
+    <span data-i18n="trust1"></span>
+    <span data-i18n="trust2"></span>
+    <span data-i18n="trust3"></span>
   </div>
 </div>
 
 <section class="booking-section" id="book">
-  <div class="booking-grid">
-    <div>
-      <div class="section-eyebrow" data-i18n="bookEyebrow">Book your ride</div>
-      <h2 data-i18n="bookTitle">Where are we taking you?</h2>
-      <p class="sub" data-i18n="bookSub">Fill in the details, then send it through. John will confirm your time by reply.</p>
+  <form class="form-card" id="bookingForm">
 
-      <form class="form-card" id="bookingForm">
-        <div class="field-group">
-          <label for="name" data-i18n-html="labelName">Your name <span class="req">*</span></label>
-          <input type="text" id="name" name="name" data-i18n-placeholder="phName" placeholder="Full name" required>
-        </div>
+    <input id="name" placeholder="Name" required>
+    <input id="phone" placeholder="Phone" required>
+    <input id="pickup" placeholder="Pickup" required>
+    <input id="dropoff" placeholder="Drop-off" required>
 
-        <div class="field-group">
-          <label for="phone" data-i18n-html="labelPhone">Your phone number <span class="req">*</span></label>
-          <input type="tel" id="phone" name="phone" placeholder="04xx xxx xxx" required>
-        </div>
+    <input type="date" id="date" required>
+    <input type="time" id="time" required>
 
-        <div class="field-group">
-          <label for="pickup" data-i18n-html="labelPickup">Pickup location <span class="req">*</span></label>
-          <input type="text" id="pickup" name="pickup" data-i18n-placeholder="phLocation" placeholder="Address, suburb, or landmark" required>
-        </div>
+    <textarea id="notes" placeholder="Notes"></textarea>
 
-        <div class="field-group">
-          <label for="dropoff" data-i18n-html="labelDropoff">Drop-off location <span class="req">*</span></label>
-          <input type="text" id="dropoff" name="dropoff" data-i18n-placeholder="phLocation" placeholder="Address, suburb, or landmark" required>
-        </div>
+    <button type="button" class="btn-sms" id="sendSms">Send booking</button>
+    <button type="button" class="btn-call" id="callJohn">Call John</button>
 
-        <div class="field-row">
-          <div class="field-group">
-            <label for="date" data-i18n-html="labelDate">Date <span class="req">*</span></label>
-            <input type="date" id="date" name="date" required>
-          </div>
-          <div class="field-group">
-            <label for="time" data-i18n-html="labelTime">Pickup time <span class="req">*</span></label>
-            <input type="time" id="time" name="time" required>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="passengers" data-i18n="labelPassengers">Passengers</label>
-            <input type="number" id="passengers" name="passengers" min="1" max="20" placeholder="1">
-          </div>
-          <div class="field-group">
-            <label for="flight" data-i18n="labelFlight">Flight number (if airport)</label>
-            <input type="text" id="flight" name="flight" placeholder="e.g. QF123">
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label for="notes" data-i18n="labelNotes">Anything else John should know</label>
-          <textarea id="notes" name="notes" rows="3" data-i18n-placeholder="phNotes" placeholder="Extra luggage, car seat, accessibility needs..."></textarea>
-        </div>
-
-        <div class="submit-row">
-          <button type="button" class="btn-sms" id="sendSms" data-i18n="btnSms">Send booking</button>
-          <button type="button" class="btn-call" id="callJohn" data-i18n="btnCall">Or call John directly</button>
-          <p class="form-note" data-i18n-html="formNote">Texting opens your messages app with the booking filled in, sent to <span class="mono">0433 159 888</span>.</p>
-        </div>
-      </form>
-    </div>
-
-    <div>
-      <div class="side-card">
-        <h3 data-i18n="howTitle">How booking works</h3>
-        <div class="steps">
-          <div class="step">
-            <span class="step-num">1</span>
-            <span class="step-text" data-i18n-html="step1">Fill in the form with your pickup, drop-off and time.</span>
-          </div>
-          <div class="step">
-            <span class="step-num">2</span>
-            <span class="step-text" data-i18n-html="step2">Send the text — it goes straight to John's phone, pre-filled.</span>
-          </div>
-          <div class="step">
-            <span class="step-num">3</span>
-            <span class="step-text" data-i18n-html="step3">John confirms your booking by reply text or call.</span>
-          </div>
-          <div class="step">
-            <span class="step-num">4</span>
-            <span class="step-text" data-i18n-html="step4">Pay by PayID or settle up with John on the day.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pay-card">
-        <h3 data-i18n="payTitle">Pay online by PayID</h3>
-        <p class="sub" data-i18n="paySub">Optional — only if you'd rather pay ahead.</p>
-        <div class="payid-box">
-          <div class="payid-row">
-            <span class="k" data-i18n="payidLabel">PayID</span>
-            <span class="v">0433 159 888</span>
-          </div>
-          <div class="payid-row">
-            <span class="k" data-i18n="nameLabel">Name</span>
-            <span class="v">John Z</span>
-          </div>
-          <div class="payid-row">
-            <span class="k" data-i18n="bankLabel">Bank</span>
-            <span class="v">CBA</span>
-          </div>
-        </div>
-        <p class="pay-note" data-i18n="payNote">Use your own banking app to pay by PayID. Add your name and trip date as the payment reference so John can match it to your booking.</p>
-      </div>
-    </div>
-  </div>
+  </form>
 </section>
 
 <section class="areas-section">
-  <div class="areas-inner">
-    <h2 data-i18n="areasTitle">Where we run</h2>
-    <p class="sub" data-i18n="areasSub">If your pickup or drop-off isn't listed, send it through anyway — John covers a wide local area.</p>
-    <div class="area-list">
-      <div class="area-item" data-i18n="area1">Airport transfers</div>
-      <div class="area-item" data-i18n="area2">CBD &amp; city</div>
-      <div class="area-item" data-i18n="area3">Local suburbs</div>
-      <div class="area-item" data-i18n="area4">Train stations</div>
-      <div class="area-item" data-i18n="area5">Hotels &amp; accommodation</div>
-      <div class="area-item" data-i18n="area6">Events &amp; functions</div>
-      <div class="area-item" data-i18n="area7">Medical appointments</div>
-      <div class="area-item" data-i18n="area8">Interstate on request</div>
-    </div>
+  <div class="area-list">
+    <div class="area-item">Airport</div>
+    <div class="area-item">CBD</div>
+    <div class="area-item">Suburbs</div>
+    <div class="area-item">Stations</div>
   </div>
-</section>
-
-<section class="pricing-section" id="pricing">
-  <div class="section-eyebrow" data-i18n="pricingEyebrow">Pricing</div>
-  <h2 data-i18n="pricingTitle">What it costs</h2>
-  <p class="sub" data-i18n="pricingSub">Airport runs are priced per person. Every other trip gets a free quote by text.</p>
-
-  <div class="price-grid">
-    <div class="price-card">
-      <span class="zone" data-i18n="priceAirportLabel">Airport transfer</span>
-      <span class="amount"><span class="currency">$</span>80<span class="from" data-i18n="perPersonWord">/person</span></span>
-      <span class="desc" data-i18n="priceAirportDesc">Usually $80–$90 per person depending on area</span>
-      <span class="sub-detail" data-i18n="priceAirportExtra">+$10 per extra person</span>
-    </div>
-    <div class="price-card featured">
-      <span class="zone" data-i18n="priceQuoteLabel">All other trips</span>
-      <span class="amount" data-i18n="priceQuoteAmount">Free quote</span>
-      <span class="desc" data-i18n="priceQuoteDesc">Text your pickup and drop-off — John will reply with a price.</span>
-      <button type="button" class="quote-btn" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})" data-i18n="priceQuoteBtn">Get a quote</button>
-    </div>
-  </div>
-
-  <p class="price-note" data-i18n="pricingNote">Final price depends on distance, time of day, and number of passengers — John will confirm the total when he confirms your booking.</p>
 </section>
 
 <footer>
-  <div class="footer-inner">
-    <div class="brand">John's Shuttle</div>
-    <div class="footer-contact">
-      <a href="tel:0433159888" data-i18n="footerCall">📞 Call: 0433 159 888</a>
-      <a href="sms:0433159888" data-i18n="footerText">💬 Text: 0433 159 888</a>
-    </div>
-  </div>
-  <div class="footer-bottom" data-i18n="footerBottom">
-    © 2026 John's Shuttle.
-  </div>
+  <div>© 2026 John's Shuttle</div>
 </footer>
 
-
 <script>
-  /* ---------- TRANSLATIONS ---------- */
-  const I18N = {
-    en: {
-      eyebrow: 'Local shuttle service',
-      heroTitle: 'Door to door.<br><span>Booked in one text.</span>',
-      heroLede: "Fill in your pickup and drop-off below. Tap one button to send the booking straight to John's phone — no account, no app.",
-      pickupLabel: 'Pickup',
-      dropoffLabel: 'Drop-off',
-      trust1: 'Booking goes direct to John — 0433 159 888',
-      trust2: 'Pay by PayID or on the day',
-      trust3: 'Same-day bookings welcome',
-      bookEyebrow: 'Book your ride',
-      bookTitle: 'Where are we taking you?',
-      bookSub: 'Fill in the details, then send it through. John will confirm your time by reply.',
-      labelName: 'Your name <span class="req">*</span>',
-      labelPhone: 'Your phone number <span class="req">*</span>',
-      labelPickup: 'Pickup location <span class="req">*</span>',
-      labelDropoff: 'Drop-off location <span class="req">*</span>',
-      labelDate: 'Date <span class="req">*</span>',
-      labelTime: 'Pickup time <span class="req">*</span>',
-      labelPassengers: 'Passengers',
-      labelFlight: 'Flight number (if airport)',
-      labelNotes: 'Anything else John should know',
-      phName: 'Full name',
-      phLocation: 'Address, suburb, or landmark',
-      phNotes: 'Extra luggage, car seat, accessibility needs...',
-      btnSms: 'Send booking by text',
-      btnCall: 'Or call John directly',
-      formNote: 'Texting opens your messages app with the booking filled in, sent to <span class="mono">0433 159 888</span>.',
-      howTitle: 'How booking works',
-      step1: 'Fill in the form with your pickup, drop-off and time.',
-      step2: "Send the text — it goes straight to John's phone, pre-filled.",
-      step3: 'John confirms your booking by reply text or call.',
-      step4: 'Pay by PayID or settle up with John on the day.',
-      payTitle: 'Pay online by PayID',
-      paySub: "Optional — only if you'd rather pay ahead.",
-      payidLabel: 'PayID',
-      nameLabel: 'Name',
-      bankLabel: 'Bank',
-      payNote: 'Use your own banking app to pay by PayID. Add your name and trip date as the payment reference so John can match it to your booking.',
-      areasTitle: 'Where we run',
-      areasSub: "If your pickup or drop-off isn't listed, send it through anyway — John covers a wide local area.",
-      area1: 'Airport transfers',
-      area2: 'CBD &amp; city',
-      area3: 'Local suburbs',
-      area4: 'Train stations',
-      area5: 'Hotels &amp; accommodation',
-      area6: 'Events &amp; functions',
-      area7: 'Medical appointments',
-      area8: 'Interstate on request',
-      pricingEyebrow: 'Pricing',
-      pricingTitle: 'What it costs',
-      pricingSub: 'Airport runs are priced per person. Every other trip gets a free quote by text.',
-      priceAirportLabel: 'Airport transfer',
-      perPersonWord: '/person',
-      priceAirportDesc: 'Usually $80–$90 per person depending on area',
-      priceAirportExtra: '+$10 per extra person',
-      priceQuoteLabel: 'All other trips',
-      priceQuoteAmount: 'Free quote',
-      priceQuoteDesc: "Text your pickup and drop-off — John will reply with a price.",
-      priceQuoteBtn: 'Get a quote',
-      pricingNote: 'Final price depends on distance, time of day, and number of passengers — John will confirm the total when he confirms your booking.',
-      footerCall: '📞 Call: 0433 159 888',
-      footerText: '💬 Text: 0433 159 888',
-      footerBottom: '© 2026 John\'s Shuttle. Placeholder PayID and bank name — replace with your real details before going live.',
-      smsHeader: 'Shuttle booking request:',
-      smsName: 'Name',
-      smsPhone: 'Phone',
-      smsPickup: 'Pickup',
-      smsDropoff: 'Drop-off',
-      smsDate: 'Date',
-      smsTime: 'Time',
-      smsPassengers: 'Passengers',
-      smsFlight: 'Flight',
-      smsNotes: 'Notes'
-    },
-    zh: {
-      eyebrow: '本地接送服务',
-      heroTitle: '门到门接送。<br><span>一条短信即可预订。</span>',
-      heroLede: '在下方填写上车地点和目的地。点一个按钮，预订信息会直接发送到 John 的手机 — 无需注册，无需下载应用。',
-      pickupLabel: '上车地点',
-      dropoffLabel: '目的地',
-      trust1: '预订信息直接发送给 John — 0433 159 888',
-      trust2: '可使用 PayID 在线支付，或当天付款',
-      trust3: '欢迎当天预订',
-      bookEyebrow: '预订接送',
-      bookTitle: '请问要去哪里？',
-      bookSub: '填写以下信息后发送。John 会回复确认时间。',
-      labelName: '您的姓名 <span class="req">*</span>',
-      labelPhone: '您的电话号码 <span class="req">*</span>',
-      labelPickup: '上车地点 <span class="req">*</span>',
-      labelDropoff: '目的地 <span class="req">*</span>',
-      labelDate: '日期 <span class="req">*</span>',
-      labelTime: '上车时间 <span class="req">*</span>',
-      labelPassengers: '乘客人数',
-      labelFlight: '航班号（如为机场接送）',
-      labelNotes: '其他需要告知 John 的事项',
-      phName: '请输入全名',
-      phLocation: '地址、区域或地标',
-      phNotes: '行李较多、需要儿童座椅、特殊需求等...',
-      btnSms: '发送短信预订',
-      btnCall: '或直接致电 John',
-      formNote: '点击后将打开您的短信应用，预订内容已自动填好，发送至 <span class="mono">0433 159 888</span>。',
-      howTitle: '预订流程',
-      step1: '填写表格，包括上车地点、目的地和时间。',
-      step2: '发送短信 — 预订信息直接送达 John 的手机。',
-      step3: 'John 会通过短信或电话回复确认。',
-      step4: '可使用 PayID 在线支付，或当天与 John 现场结算。',
-      payTitle: '通过 PayID 在线支付',
-      paySub: '此为可选项 — 如您希望提前付款。',
-      payidLabel: 'PayID',
-      nameLabel: '姓名',
-      bankLabel: '银行',
-      payNote: '请使用您自己的银行应用通过 PayID 付款。备注请填写您的姓名和行程日期，方便 John 核对您的预订。',
-      areasTitle: '服务范围',
-      areasSub: '如果您的上车地点或目的地不在列表中，仍可发送预订 — John 的服务范围覆盖广泛本地区域。',
-      area1: '机场接送',
-      area2: '市区 / CBD',
-      area3: '本地郊区',
-      area4: '火车站',
-      area5: '酒店及住宿点',
-      area6: '活动及庆典',
-      area7: '医疗预约',
-      area8: '州际接送（需提前咨询）',
-      pricingEyebrow: '价格',
-      pricingTitle: '收费标准',
-      pricingSub: '机场接送按人数收费。其他所有行程均可发短信免费获取报价。',
-      priceAirportLabel: '机场接送',
-      perPersonWord: '/人',
-      priceAirportDesc: '通常每人 $80–$90，视地区而定',
-      priceAirportExtra: '每增加一人 +$10',
-      priceQuoteLabel: '其他所有行程',
-      priceQuoteAmount: '免费报价',
-      priceQuoteDesc: '发短信告知上车地点和目的地 — John 会回复报价。',
-      priceQuoteBtn: '获取报价',
-      pricingNote: '最终价格视距离、出行时间及乘客人数而定 — John 会在确认预订时告知最终费用。',
-      footerCall: '📞 致电：0433 159 888',
-      footerText: '💬 短信：0433 159 888',
-      footerBottom: '© 2026 John\'s Shuttle。PayID 和银行名称为示例信息 — 上线前请替换为真实信息。',
-      smsHeader: '班车预订请求：',
-      smsName: '姓名',
-      smsPhone: '电话',
-      smsPickup: '上车地点',
-      smsDropoff: '目的地',
-      smsDate: '日期',
-      smsTime: '时间',
-      smsPassengers: '乘客人数',
-      smsFlight: '航班号',
-      smsNotes: '备注'
-    }
-  };
-
-  let currentLang = 'en';
-
-  function applyLang(lang){
-    currentLang = lang;
-    document.documentElement.setAttribute('lang', lang);
-    document.documentElement.setAttribute('data-lang', lang);
-    const dict = I18N[lang];
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if(dict[key] !== undefined) el.textContent = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-      const key = el.getAttribute('data-i18n-html');
-      if(dict[key] !== undefined) el.innerHTML = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
-      if(dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
-    });
-
-    document.getElementById('langEn').classList.toggle('active', lang === 'en');
-    document.getElementById('langZh').classList.toggle('active', lang === 'zh');
-
-    // refresh the live route preview placeholders ("—" stays the same in both languages)
+const I18N = {
+  en: {
+    eyebrow: "Local shuttle service",
+    heroTitle: "Door to door.<br><span>Booked in one text.</span>",
+    heroLede: "Send your trip details straight to John.",
+    pickupLabel: "Pickup",
+    dropoffLabel: "Drop-off",
+    trust1: "Direct booking to John",
+    trust2: "Pay on day or PayID",
+    trust3: "Same-day welcome",
+    smsHeader: "Booking request:"
+  },
+  zh: {
+    eyebrow: "本地接送",
+    heroTitle: "门到门接送。<br><span>一条短信预订。</span>",
+    heroLede: "填写信息即可发送给 John。",
+    pickupLabel: "上车地点",
+    dropoffLabel: "目的地",
+    trust1: "直接发送给 John",
+    trust2: "可当天付款",
+    trust3: "支持当天预订",
+    smsHeader: "预订请求:"
   }
+};
 
-  document.getElementById('langEn').addEventListener('click', () => applyLang('en'));
-  document.getElementById('langZh').addEventListener('click', () => applyLang('zh'));
+let lang="en";
 
-  // detect browser language on first load, default to English otherwise
-  if(navigator.language && navigator.language.toLowerCase().startsWith('zh')){
-    applyLang('zh');
-  }
+function applyLang(l){
+  lang=l;
+  document.documentElement.lang=l;
+  const d=I18N[l];
 
-  /* ---------- FORM BEHAVIOUR ---------- */
-  const form = document.getElementById('bookingForm');
-  const previewPickup = document.getElementById('previewPickup');
-  const previewDropoff = document.getElementById('previewDropoff');
-  const pickupInput = document.getElementById('pickup');
-  const dropoffInput = document.getElementById('dropoff');
-
-  pickupInput.addEventListener('input', () => {
-    previewPickup.textContent = pickupInput.value.trim() || '—';
-    previewPickup.parentElement.classList.toggle('filled', !!pickupInput.value.trim());
-  });
-  dropoffInput.addEventListener('input', () => {
-    previewDropoff.textContent = dropoffInput.value.trim() || '—';
-    previewDropoff.parentElement.classList.toggle('filled', !!dropoffInput.value.trim());
+  document.querySelectorAll("[data-i18n]").forEach(e=>{
+    e.textContent=d[e.dataset.i18n]||"";
   });
 
-  const PHONE = '0433159888';
-
-  function buildMessage(){
-    const dict = I18N[currentLang];
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const pickup = document.getElementById('pickup').value.trim();
-    const dropoff = document.getElementById('dropoff').value.trim();
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const passengers = document.getElementById('passengers').value.trim();
-    const flight = document.getElementById('flight').value.trim();
-    const notes = document.getElementById('notes').value.trim();
-
-    let msg = `${dict.smsHeader}\n`;
-    msg += `${dict.smsName}: ${name || '-'}\n`;
-    msg += `${dict.smsPhone}: ${phone || '-'}\n`;
-    msg += `${dict.smsPickup}: ${pickup || '-'}\n`;
-    msg += `${dict.smsDropoff}: ${dropoff || '-'}\n`;
-    msg += `${dict.smsDate}: ${date || '-'}\n`;
-    msg += `${dict.smsTime}: ${time || '-'}\n`;
-    if(passengers) msg += `${dict.smsPassengers}: ${passengers}\n`;
-    if(flight) msg += `${dict.smsFlight}: ${flight}\n`;
-    if(notes) msg += `${dict.smsNotes}: ${notes}\n`;
-    return msg;
-  }
-
-  function validateRequired(){
-    const required = ['name','phone','pickup','dropoff','date','time'];
-    for(const id of required){
-      const el = document.getElementById(id);
-      if(!el.value.trim()){
-        el.focus();
-        el.style.borderColor = '#c0392b';
-        return false;
-      }
-    }
-    return true;
-  }
-
-  document.getElementById('sendSms').addEventListener('click', () => {
-    if(!validateRequired()) return;
-    const msg = buildMessage();
-    const encoded = encodeURIComponent(msg);
-    // sms: URI scheme — works on most mobile browsers (iOS uses & before body, Android uses ?)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const smsUrl = isIOS
-      ? `sms:${PHONE}&body=${encoded}`
-      : `sms:${PHONE}?body=${encoded}`;
-    window.location.href = smsUrl;
+  document.querySelectorAll("[data-i18n-html]").forEach(e=>{
+    e.innerHTML=d[e.dataset.i18nHtml]||"";
   });
 
-  document.getElementById('callJohn').addEventListener('click', () => {
-    window.location.href = `tel:${PHONE}`;
-  });
+  document.getElementById("langEn").classList.toggle("active",l==="en");
+  document.getElementById("langZh").classList.toggle("active",l==="zh");
+}
 
-  // clear red border on input
-  form.addEventListener('input', (e) => {
-    if(e.target.style) e.target.style.borderColor = '';
-  });
+document.getElementById("langEn").onclick=()=>applyLang("en");
+document.getElementById("langZh").onclick=()=>applyLang("zh");
+applyLang("en");
+
+const PHONE="0433159888";
+
+document.getElementById("sendSms").onclick=()=>{
+  const msg=
+    I18N[lang].smsHeader+"\n"+
+    "Name: "+document.getElementById("name").value+"\n"+
+    "Pickup: "+document.getElementById("pickup").value+"\n"+
+    "Drop-off: "+document.getElementById("dropoff").value;
+
+  const url="sms:"+PHONE+"?body="+encodeURIComponent(msg);
+  window.location.href=url;
+};
+
+document.getElementById("callJohn").onclick=()=>{
+  window.location.href="tel:"+PHONE;
+};
 </script>
 
 </body>
