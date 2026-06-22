@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Bookings</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+
+<header class="topbar">
+  <h1>John's Shuttle Admin</h1>
+  <p>Bookings Dashboard</p>
+</header>
+
+<main class="container">
+
+  <div class="toolbar">
+    <button onclick="loadBookings()">Refresh</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Pickup</th>
+        <th>Dropoff</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody id="bookingsTable">
+      <!-- bookings go here -->
+    </tbody>
+  </table>
+
+</main>
+
+</body>
+</html>
