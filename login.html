@@ -57,11 +57,11 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="login-card">
   <h1>Admin Login</h1>
   <p class="sub">John's Shuttle — bookings dashboard</p>
-
+ 
   <form id="loginForm">
     <div class="field">
       <label for="email">Email</label>
@@ -75,47 +75,47 @@
     <div class="error-msg" id="errorMsg"></div>
   </form>
 </div>
-
+ 
 <script>
   const sb = window.supabase.createClient(
     "https://fcsulkjgynoyebmplpms.supabase.co",
     "sb_publishable_plDr8k-pynGbUJcdWS9UkQ_0wusZIUS"
   );
-
+ 
   // If already logged in, skip straight to the dashboard
   sb.auth.getSession().then(({ data }) => {
     if(data.session){
       window.location.href = 'admin.html';
     }
   });
-
+ 
   const form = document.getElementById('loginForm');
   const errorMsg = document.getElementById('errorMsg');
   const loginBtn = document.getElementById('loginBtn');
-
+ 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMsg.style.display = 'none';
     loginBtn.disabled = true;
     loginBtn.textContent = 'Logging in...';
-
+ 
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-
+ 
     const { error } = await sb.auth.signInWithPassword({ email, password });
-
+ 
     loginBtn.disabled = false;
     loginBtn.textContent = 'Log in';
-
+ 
     if(error){
       errorMsg.textContent = 'Incorrect email or password.';
       errorMsg.style.display = 'block';
       return;
     }
-
+ 
     window.location.href = 'admin.html';
   });
 </script>
-
+ 
 </body>
 </html>
