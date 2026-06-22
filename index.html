@@ -38,8 +38,18 @@
     );
   }
 
-google.maps.event.addDomListener(window, "load", initAutocomplete);
-</script>
+  google.maps.event.addDomListener(window, "load", initAutocomplete);
+  </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+  const supabaseUrl = "sb_publishable_plDr8k-pynGbUJcdWS9UkQ_0wusZIUS";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI";
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  </script>
+  
 
   body{
     background:var(--off-white);
