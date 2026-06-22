@@ -8,7 +8,7 @@ const supabase = window.supabase.createClient(
 const form = document.getElementById("bookingForm");
 
 if (form) {
-  form.addEventListener("submit", async (e) => {
+  document.getElementById("sendSms").addEventListener("click", async () => {
     e.preventDefault();
 
     const booking = {
@@ -18,9 +18,9 @@ if (form) {
       dropoff: document.getElementById("dropoff").value,
       date: document.getElementById("date").value,
       time: document.getElementById("time").value,
-      passengers: document.getElementById("passengers").value,
-      flight: document.getElementById("flight").value,
-      notes: document.getElementById("notes").value,
+      passengers: document.getElementById("passengers").value || null,
+      flight: document.getElementById("flight").value || null,
+      notes: document.getElementById("notes").value|| null,
       status: "new"
     };
 
