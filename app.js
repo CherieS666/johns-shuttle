@@ -8,7 +8,8 @@ const sb = window.supabase.createClient(
 const form = document.getElementById("bookingForm");
 
 if (form) {
-  document.getElementById("sendSms").addEventListener("click", async (e) => {
+  document.getElementById("sendSms").addEventListener("click", async (e) => {if (form) {console.log("BUTTON CLICKED");
+ 
     e.preventDefault();
 
     const booking = {
