@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — John's Shuttle</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --asphalt:#1B2430;
+    --asphalt-deep:#11161D;
+    --amber:#E8912D;
+    --amber-bright:#F5A845;
+    --off-white:#F7F5F0;
+    --slate:#5C6470;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--asphalt-deep);
+    color:var(--off-white);
+    font-family:'Inter',-apple-system,sans-serif;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .login-card{
+    background:var(--asphalt);
+    border-top:4px solid var(--amber);
+    padding:40px 36px;
+    max-width:380px;width:100%;
+  }
+  h1{font-size:22px;font-weight:600;margin-bottom:4px;color:var(--off-white);}
+  p.sub{font-size:14px;color:#9aa1ad;margin-bottom:28px;}
+  label{
+    display:block;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;
+    color:#9aa1ad;margin-bottom:7px;
+  }
+  .field{margin-bottom:18px;}
+  input{
+    width:100%;padding:12px 14px;background:var(--asphalt-deep);
+    border:1px solid rgba(247,245,240,0.15);color:var(--off-white);
+    font-size:15px;
+  }
+  input:focus{outline:none;border-color:var(--amber);}
+  button{
+    width:100%;padding:14px;background:var(--amber);color:var(--asphalt);
+    border:none;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;
+    transition:background 0.2s ease;
+  }
+  button:hover{background:var(--amber-bright);}
+  button:disabled{opacity:0.6;cursor:not-allowed;}
+  .error-msg{
+    margin-top:16px;padding:12px 14px;font-size:13.5px;
+    background:rgba(192,57,43,0.12);border-left:3px solid #c0392b;color:#f0a89e;
+    display:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <h1>Admin Login</h1>
+  <p class="sub">John's Shuttle — bookings dashboard</p>
+
+  <form id="loginForm">
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" required autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+    </div>
+    <button type="submit" id="loginBtn">Log in</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </form>
+</div>
+
+<script>
+  const sb = window.supabase.createClient(
+    "https://fcsulkjgynoyebmplpms.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI"
+  );
+
+  // If already logged in, skip straight to the dashboard
+  sb.auth.getSession().then(({ data }) => {
+    if(data.session){
+      window.location.href = 'admin.html';
+    }
+  });
+
+  const form = document.getElementById('loginForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const loginBtn = document.getElementById('loginBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in...';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Log in';
+
+    if(error){
+      errorMsg.textContent = 'Incorrect email or password.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    window.location.href = 'admin.html';
+  });
+</script>
+
+</body>
+</html>
