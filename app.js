@@ -1,11 +1,51 @@
 // ===== SUPABASE SETUP =====
 const supabase = window.supabase.createClient(
   "YOUR_SUPABASE_URL",
-  "YOUR_SUPABASE_ANON_KEY"
+  "YOUR_ANON_KEY"
 );
 
-// ===== LOAD BOOKINGS =====
+// ===== FORM ELEMENTS =====
+const form = document.getElementById("bookingForm");
+
+if (form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const booking = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      pickup: document.getElementById("pickup").value,
+      dropoff: document.getElementById("dropoff").value,
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value,
+      passengers: document.getElementById("passengers").value,
+      flight: document.getElementById("flight").value,
+      notes: document.getElementById("notes").value,
+      status: "new"
+    };
+
+    const { error } = await supabase
+      .from("bookings")
+      .insert([booking]);
+
+    if (error) {
+      alert("Something went wrong. Please try again.");
+      console.error(error);
+      return;
+    }
+
+    // success message
+    alert("Booking request sent successfully!");
+
+    form.reset();
+  });
+}
+
+// ===== ADMIN PAGE: LOAD BOOKINGS =====
 async function loadBookings() {
+  const table = document.getElementById("bookingsTable");
+  if (!table) return;
+
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
@@ -16,27 +56,22 @@ async function loadBookings() {
     return;
   }
 
-  const table = document.getElementById("bookingsTable");
   table.innerHTML = "";
 
-  data.forEach(booking => {
+  data.forEach((b) => {
     const row = document.createElement("tr");
 
     row.innerHTML = `
-      <td>${booking.name || ""}</td>
-      <td>${booking.phone || ""}</td>
-      <td>${booking.pickup || ""}</td>
-      <td>${booking.dropoff || ""}</td>
-      <td>${booking.date || ""}</td>
-      <td>${booking.time || ""}</td>
+      <td>${b.name || ""}</td>
+      <td>${b.phone || ""}</td>
+      <td>${b.pickup || ""}</td>
+      <td>${b.dropoff || ""}</td>
+      <td>${b.date || ""}</td>
+      <td>${b.time || ""}</td>
+      <td>${b.status || "new"}</td>
       <td>
-        <span class="status ${booking.status || "new"}">
-          ${booking.status || "new"}
-        </span>
-      </td>
-      <td>
-        <button onclick="updateStatus('${booking.id}', 'confirmed')">Confirm</button>
-        <button onclick="updateStatus('${booking.id}', 'completed')">Done</button>
+        <button onclick="updateStatus('${b.id}', 'confirmed')">Confirm</button>
+        <button onclick="updateStatus('${b.id}', 'completed')">Done</button>
       </td>
     `;
 
@@ -59,5 +94,5 @@ async function updateStatus(id, status) {
   loadBookings();
 }
 
-// auto load
+// auto load admin page
 loadBookings();
