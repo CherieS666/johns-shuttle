@@ -24,6 +24,23 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
 
+  
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdUds167tR-xe0Qb8Y4e1XaZiGZ2p2g3&libraries=places"></script>
+
+  <script>
+  function initAutocomplete() {
+    const pickup = new google.maps.places.Autocomplete(
+      document.getElementById("pickup")
+    );
+
+    const dropoff = new google.maps.places.Autocomplete(
+      document.getElementById("dropoff")
+    );
+  }
+
+google.maps.event.addDomListener(window, "load", initAutocomplete);
+</script>
+
   body{
     background:var(--off-white);
     color:var(--asphalt);
