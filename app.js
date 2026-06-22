@@ -4,13 +4,20 @@ const sb = window.supabase.createClient(
   "YOUR_ANON_KEY"
 );
 
-// ===== FORM =====
-const form = document.getElementById("bookingForm");
+document.addEventListener("DOMContentLoaded", () => {
 
-if (form) {
-  document.getElementById("sendSms").addEventListener("click", async (e) => {if (form) {console.log("BUTTON CLICKED");
- 
+  const form = document.getElementById("bookingForm");
+  const btn = document.getElementById("sendSms");
+
+  if (!form || !btn) {
+    console.error("Form or button not found");
+    return;
+  }
+
+  btn.addEventListener("click", async (e) => {
     e.preventDefault();
+
+    console.log("BUTTON CLICKED");
 
     const booking = {
       name: document.getElementById("name").value.trim(),
@@ -25,23 +32,21 @@ if (form) {
       status: "new"
     };
 
-    // basic validation
     if (!booking.name || !booking.phone || !booking.pickup || !booking.dropoff || !booking.date || !booking.time) {
       alert("Please fill all required fields.");
       return;
     }
 
-    const { error } = await sb
-      .from("bookings")
-      .insert([booking]);
+    const { error } = await sb.from("bookings").insert([booking]);
 
     if (error) {
       console.error(error);
-      alert("Something went wrong. Please try again.");
+      alert("Database error. Check console.");
       return;
     }
 
     alert("Booking sent successfully!");
     form.reset();
   });
-}
+
+});
