@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --asphalt:#1B2430;
@@ -20,37 +21,10 @@
     --green:#2F7A4D;
     --card-bg:#FFFFFF;
   }
-
+ 
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-
-  
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdUds167tR-xe0Qb8Y4e1XaZiGZ2p2g3&libraries=places"></script>
-
-  <script>
-  function initAutocomplete() {
-    const pickup = new google.maps.places.Autocomplete(
-      document.getElementById("pickup")
-    );
-
-    const dropoff = new google.maps.places.Autocomplete(
-      document.getElementById("dropoff")
-    );
-  }
-
-  google.maps.event.addDomListener(window, "load", initAutocomplete);
-  </script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-  const supabaseUrl = "https://fcsulkjgynoyebmplpms.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI";
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-  </script>
-  
-
+ 
   body{
     background:var(--off-white);
     color:var(--asphalt);
@@ -59,7 +33,7 @@
     line-height:1.6;
     overflow-x:hidden;
   }
-
+ 
   h1,h2,h3,.display{
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
@@ -67,9 +41,9 @@
     color:var(--asphalt);
     text-transform:uppercase;
   }
-
+ 
   .mono{font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;}
-
+ 
   /* Chinese text needs its own face — Barlow Condensed and uppercase have no CJK equivalent */
   html[data-lang="zh"] h1,
   html[data-lang="zh"] h2,
@@ -94,7 +68,7 @@
     text-transform:none;
     font-weight:600;
   }
-
+ 
   /* ---------- LANGUAGE TOGGLE ---------- */
   .lang-toggle{
     display:flex;border:1px solid var(--amber);
@@ -110,17 +84,17 @@
   .lang-toggle button:not(.active):hover{
     background:rgba(232,145,45,0.15);
   }
-
+ 
   a{color:inherit;text-decoration:none;}
-
+ 
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
-
+ 
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
   }
-
+ 
   .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
-
+ 
   /* ---------- HEADER ---------- */
   header{
     background:var(--asphalt);
@@ -148,7 +122,7 @@
   }
   .header-call a:hover{background:var(--amber);color:var(--asphalt);}
   .nav-right{display:flex;align-items:center;gap:14px;}
-
+ 
   /* ---------- HERO ---------- */
   .hero{
     background:var(--asphalt);
@@ -172,7 +146,7 @@
     font-family:'Inter',sans-serif;text-transform:none;font-weight:400;
     font-size:17px;color:#c7ccd3;max-width:480px;margin-bottom:0;
   }
-
+ 
   /* ---------- ROUTE LINE (signature element) ---------- */
   .route-line{
     display:flex;align-items:center;gap:0;
@@ -207,7 +181,7 @@
     top:-14px;
     opacity:0.5;
   }
-
+ 
   /* ---------- TRUST STRIP ---------- */
   .trust{
     background:var(--asphalt-deep);
@@ -221,7 +195,7 @@
   }
   .trust span{display:flex;align-items:center;gap:8px;}
   .trust span::before{content:'●';color:var(--amber);font-size:8px;}
-
+ 
   /* ---------- BOOKING SECTION ---------- */
   .booking-section{
     padding:64px 28px 80px;
@@ -233,7 +207,7 @@
   @media(min-width:880px){
     .booking-grid{grid-template-columns:1.15fr 0.85fr;align-items:start;}
   }
-
+ 
   .section-eyebrow{
     font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:0.1em;
     text-transform:uppercase;color:var(--amber);margin-bottom:10px;
@@ -242,7 +216,7 @@
   .booking-grid p.sub{
     text-transform:none;font-weight:400;color:var(--slate);font-size:15px;margin-bottom:28px;
   }
-
+ 
   /* form card */
   .form-card{
     background:var(--card-bg);
@@ -267,7 +241,7 @@
     outline:none;border-color:var(--amber);background:#fff;
   }
   input::placeholder{color:#a8a39a;}
-
+ 
   .submit-row{
     margin-top:28px;padding-top:24px;border-top:1px solid var(--line-dark);
     display:flex;flex-direction:column;gap:12px;
@@ -293,7 +267,17 @@
     font-size:13px;color:var(--slate);text-align:center;margin-top:4px;
   }
   .form-note .mono{color:var(--asphalt);}
-
+  .form-status{
+    margin-top:14px;padding:14px 16px;font-size:14px;
+    border-left:3px solid var(--green);
+  }
+  .form-status.success{
+    background:rgba(47,122,77,0.08);color:#1d5236;border-left-color:var(--green);
+  }
+  .form-status.error{
+    background:rgba(192,57,43,0.08);color:#8c2c22;border-left-color:#c0392b;
+  }
+ 
   /* side panel: how it works + payment */
   .side-card{
     background:var(--asphalt);color:var(--off-white);
@@ -309,7 +293,7 @@
   }
   .step-text{font-size:14.5px;color:#d3d7dd;}
   .step-text strong{color:var(--off-white);}
-
+ 
   .pay-card{
     background:var(--card-bg);border:1px solid var(--line-dark);padding:26px;
   }
@@ -324,7 +308,7 @@
   .payid-row .v{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--asphalt);font-weight:600;}
   .pay-note{font-size:13px;color:var(--slate);}
   .pay-note strong{color:var(--asphalt);}
-
+ 
   /* ---------- ROUTES / AREAS ---------- */
   .areas-section{
     background:var(--asphalt-deep);color:var(--off-white);
@@ -344,7 +328,7 @@
     padding:18px 16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
     font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#d3d7dd;
   }
-
+ 
   /* ---------- FOOTER ---------- */
   footer{
     background:var(--asphalt);color:#9aa1ad;
@@ -366,7 +350,7 @@
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div class="nav">
     <div class="brand"><span class="dot"></span>John's Shuttle</div>
@@ -381,13 +365,13 @@
     </div>
   </div>
 </header>
-
+ 
 <section class="hero">
   <div class="hero-inner">
     <div class="eyebrow" data-i18n="eyebrow">Local shuttle service</div>
     <h1 data-i18n-html="heroTitle">Door to door.<br><span>Booked in one text.</span></h1>
     <p class="lede" data-i18n="heroLede">Fill in your pickup and drop-off below. Tap one button to send the booking straight to John's phone — no account, no app.</p>
-
+ 
     <div class="route-line" aria-hidden="true">
       <div class="route-point">
         <span class="dot"></span>
@@ -403,7 +387,7 @@
     </div>
   </div>
 </section>
-
+ 
 <div class="trust">
   <div class="wrap">
     <span data-i18n="trust1">Booking goes direct to John — 0433 159 888</span>
@@ -411,35 +395,35 @@
     <span data-i18n="trust3">Same-day bookings welcome</span>
   </div>
 </div>
-
+ 
 <section class="booking-section" id="book">
   <div class="booking-grid">
     <div>
       <div class="section-eyebrow" data-i18n="bookEyebrow">Book your ride</div>
       <h2 data-i18n="bookTitle">Where are we taking you?</h2>
       <p class="sub" data-i18n="bookSub">Fill in the details, then send it through. John will confirm your time by reply.</p>
-
+ 
       <form class="form-card" id="bookingForm">
         <div class="field-group">
           <label for="name" data-i18n-html="labelName">Your name <span class="req">*</span></label>
           <input type="text" id="name" name="name" data-i18n-placeholder="phName" placeholder="Full name" required>
         </div>
-
+ 
         <div class="field-group">
           <label for="phone" data-i18n-html="labelPhone">Your phone number <span class="req">*</span></label>
           <input type="tel" id="phone" name="phone" placeholder="04xx xxx xxx" required>
         </div>
-
+ 
         <div class="field-group">
           <label for="pickup" data-i18n-html="labelPickup">Pickup location <span class="req">*</span></label>
           <input type="text" id="pickup" name="pickup" data-i18n-placeholder="phLocation" placeholder="Address, suburb, or landmark" required>
         </div>
-
+ 
         <div class="field-group">
           <label for="dropoff" data-i18n-html="labelDropoff">Drop-off location <span class="req">*</span></label>
           <input type="text" id="dropoff" name="dropoff" data-i18n-placeholder="phLocation" placeholder="Address, suburb, or landmark" required>
         </div>
-
+ 
         <div class="field-row">
           <div class="field-group">
             <label for="date" data-i18n-html="labelDate">Date <span class="req">*</span></label>
@@ -450,7 +434,7 @@
             <input type="time" id="time" name="time" required>
           </div>
         </div>
-
+ 
         <div class="field-row">
           <div class="field-group">
             <label for="passengers" data-i18n="labelPassengers">Passengers</label>
@@ -461,20 +445,21 @@
             <input type="text" id="flight" name="flight" placeholder="e.g. QF123">
           </div>
         </div>
-
+ 
         <div class="field-group">
           <label for="notes" data-i18n="labelNotes">Anything else John should know</label>
           <textarea id="notes" name="notes" rows="3" data-i18n-placeholder="phNotes" placeholder="Extra luggage, car seat, accessibility needs..."></textarea>
         </div>
-
+ 
         <div class="submit-row">
-          <button type="button" class="btn-sms" id="sendSms" data-i18n="btnSms">Send booking</button>
+          <button type="button" class="btn-sms" id="submitBooking" data-i18n="btnSubmit">Submit booking</button>
           <button type="button" class="btn-call" id="callJohn" data-i18n="btnCall">Or call John directly</button>
-          <p class="form-note" data-i18n-html="formNote">Texting opens your messages app with the booking filled in, sent to <span class="mono">0433 159 888</span>.</p>
+          <p class="form-note" data-i18n-html="formNote">Your booking goes straight to John — he'll confirm by phone or text to <span class="mono">0433 159 888</span>.</p>
+          <div id="formStatus" class="form-status" role="status" aria-live="polite" style="display:none;"></div>
         </div>
       </form>
     </div>
-
+ 
     <div>
       <div class="side-card">
         <h3 data-i18n="howTitle">How booking works</h3>
@@ -497,7 +482,7 @@
           </div>
         </div>
       </div>
-
+ 
       <div class="pay-card">
         <h3 data-i18n="payTitle">Pay online by PayID</h3>
         <p class="sub" data-i18n="paySub">Optional — only if you'd rather pay ahead.</p>
@@ -520,7 +505,7 @@
     </div>
   </div>
 </section>
-
+ 
 <section class="areas-section">
   <div class="areas-inner">
     <h2 data-i18n="areasTitle">Where we run</h2>
@@ -537,7 +522,7 @@
     </div>
   </div>
 </section>
-
+ 
 <footer>
   <div class="footer-inner">
     <div class="brand">John's Shuttle</div>
@@ -550,8 +535,8 @@
     © 2026 John's Shuttle. 
   </div>
 </footer>
-
-
+ 
+ 
 <script>
   /* ---------- TRANSLATIONS ---------- */
   const I18N = {
@@ -579,9 +564,11 @@
       phName: 'Full name',
       phLocation: 'Address, suburb, or landmark',
       phNotes: 'Extra luggage, car seat, accessibility needs...',
-      btnSms: 'Send booking by text',
+      btnSubmit: 'Submit booking',
       btnCall: 'Or call John directly',
-      formNote: 'Texting opens your messages app with the booking filled in, sent to <span class="mono">0433 159 888</span>.',
+      formNote: "Your booking goes straight to John — he'll confirm by phone or text to <span class=\"mono\">0433 159 888</span>.",
+      statusSuccess: "Booking received! John will confirm your trip by phone or text shortly.",
+      statusError: "Something went wrong submitting your booking. Please call or text John directly on 0433 159 888.",
       howTitle: 'How booking works',
       step1: 'Fill in the form with your pickup, drop-off and time.',
       step2: "Send the text — it goes straight to John's phone, pre-filled.",
@@ -605,17 +592,7 @@
       area8: 'Interstate on request',
       footerCall: '📞 Call: 0433 159 888',
       footerText: '💬 Text: 0433 159 888',
-      footerBottom: '© 2026 John\'s Shuttle. Placeholder PayID and bank name — replace with your real details before going live.',
-      smsHeader: 'Shuttle booking request:',
-      smsName: 'Name',
-      smsPhone: 'Phone',
-      smsPickup: 'Pickup',
-      smsDropoff: 'Drop-off',
-      smsDate: 'Date',
-      smsTime: 'Time',
-      smsPassengers: 'Passengers',
-      smsFlight: 'Flight',
-      smsNotes: 'Notes'
+      footerBottom: '© 2026 John\'s Shuttle. Placeholder PayID and bank name — replace with your real details before going live.'
     },
     zh: {
       eyebrow: '本地接送服务',
@@ -641,9 +618,11 @@
       phName: '请输入全名',
       phLocation: '地址、区域或地标',
       phNotes: '行李较多、需要儿童座椅、特殊需求等...',
-      btnSms: '发送短信预订',
+      btnSubmit: '提交预订',
       btnCall: '或直接致电 John',
-      formNote: '点击后将打开您的短信应用，预订内容已自动填好，发送至 <span class="mono">0433 159 888</span>。',
+      formNote: '您的预订将直接发送给 John — 他会通过电话或短信 <span class="mono">0433 159 888</span> 确认。',
+      statusSuccess: '预订已收到！John 会尽快通过电话或短信确认您的行程。',
+      statusError: '提交预订时出现问题。请直接致电或发短信给 John：0433 159 888。',
       howTitle: '预订流程',
       step1: '填写表格，包括上车地点、目的地和时间。',
       step2: '发送短信 — 预订信息直接送达 John 的手机。',
@@ -667,28 +646,18 @@
       area8: '州际接送（需提前咨询）',
       footerCall: '📞 致电：0433 159 888',
       footerText: '💬 短信：0433 159 888',
-      footerBottom: '© 2026 John\'s Shuttle。PayID 和银行名称为示例信息 — 上线前请替换为真实信息。',
-      smsHeader: '班车预订请求：',
-      smsName: '姓名',
-      smsPhone: '电话',
-      smsPickup: '上车地点',
-      smsDropoff: '目的地',
-      smsDate: '日期',
-      smsTime: '时间',
-      smsPassengers: '乘客人数',
-      smsFlight: '航班号',
-      smsNotes: '备注'
+      footerBottom: '© 2026 John\'s Shuttle。PayID 和银行名称为示例信息 — 上线前请替换为真实信息。'
     }
   };
-
+ 
   let currentLang = 'en';
-
+ 
   function applyLang(lang){
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('data-lang', lang);
     const dict = I18N[lang];
-
+ 
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if(dict[key] !== undefined) el.textContent = dict[key];
@@ -701,28 +670,28 @@
       const key = el.getAttribute('data-i18n-placeholder');
       if(dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
     });
-
+ 
     document.getElementById('langEn').classList.toggle('active', lang === 'en');
     document.getElementById('langZh').classList.toggle('active', lang === 'zh');
-
+ 
     // refresh the live route preview placeholders ("—" stays the same in both languages)
   }
-
+ 
   document.getElementById('langEn').addEventListener('click', () => applyLang('en'));
   document.getElementById('langZh').addEventListener('click', () => applyLang('zh'));
-
+ 
   // detect browser language on first load, default to English otherwise
   if(navigator.language && navigator.language.toLowerCase().startsWith('zh')){
     applyLang('zh');
   }
-
+ 
   /* ---------- FORM BEHAVIOUR ---------- */
   const form = document.getElementById('bookingForm');
   const previewPickup = document.getElementById('previewPickup');
   const previewDropoff = document.getElementById('previewDropoff');
   const pickupInput = document.getElementById('pickup');
   const dropoffInput = document.getElementById('dropoff');
-
+ 
   pickupInput.addEventListener('input', () => {
     previewPickup.textContent = pickupInput.value.trim() || '—';
     previewPickup.parentElement.classList.toggle('filled', !!pickupInput.value.trim());
@@ -731,34 +700,18 @@
     previewDropoff.textContent = dropoffInput.value.trim() || '—';
     previewDropoff.parentElement.classList.toggle('filled', !!dropoffInput.value.trim());
   });
-
+ 
   const PHONE = '0433159888';
-
-  function buildMessage(){
-    const dict = I18N[currentLang];
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const pickup = document.getElementById('pickup').value.trim();
-    const dropoff = document.getElementById('dropoff').value.trim();
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const passengers = document.getElementById('passengers').value.trim();
-    const flight = document.getElementById('flight').value.trim();
-    const notes = document.getElementById('notes').value.trim();
-
-    let msg = `${dict.smsHeader}\n`;
-    msg += `${dict.smsName}: ${name || '-'}\n`;
-    msg += `${dict.smsPhone}: ${phone || '-'}\n`;
-    msg += `${dict.smsPickup}: ${pickup || '-'}\n`;
-    msg += `${dict.smsDropoff}: ${dropoff || '-'}\n`;
-    msg += `${dict.smsDate}: ${date || '-'}\n`;
-    msg += `${dict.smsTime}: ${time || '-'}\n`;
-    if(passengers) msg += `${dict.smsPassengers}: ${passengers}\n`;
-    if(flight) msg += `${dict.smsFlight}: ${flight}\n`;
-    if(notes) msg += `${dict.smsNotes}: ${notes}\n`;
-    return msg;
-  }
-
+ 
+  // ---------- SUPABASE SETUP ----------
+  // The anon key below is meant to be public — it only allows INSERT on the
+  // bookings table (see supabase-setup.sql). It cannot read, edit, or delete
+  // any booking, including the one it just created.
+  const sb = window.supabase.createClient(
+    "https://fcsulkjgynoyebmplpms.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI"
+  );
+ 
   function validateRequired(){
     const required = ['name','phone','pickup','dropoff','date','time'];
     for(const id of required){
@@ -771,28 +724,66 @@
     }
     return true;
   }
-
-  document.getElementById('sendSms').addEventListener('click', () => {
+ 
+  function showStatus(type, message){
+    const statusEl = document.getElementById('formStatus');
+    statusEl.textContent = message;
+    statusEl.className = `form-status ${type}`;
+    statusEl.style.display = 'block';
+    statusEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+ 
+  const submitBtn = document.getElementById('submitBooking');
+ 
+  submitBtn.addEventListener('click', async () => {
     if(!validateRequired()) return;
-    const msg = buildMessage();
-    const encoded = encodeURIComponent(msg);
-    // sms: URI scheme — works on most mobile browsers (iOS uses & before body, Android uses ?)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const smsUrl = isIOS
-      ? `sms:${PHONE}&body=${encoded}`
-      : `sms:${PHONE}?body=${encoded}`;
-    window.location.href = smsUrl;
+ 
+    const dict = I18N[currentLang];
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '...';
+ 
+    const booking = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      pickup: document.getElementById('pickup').value.trim(),
+      dropoff: document.getElementById('dropoff').value.trim(),
+      date: document.getElementById('date').value,
+      time: document.getElementById('time').value,
+      passengers: document.getElementById('passengers').value.trim() || null,
+      flight: document.getElementById('flight').value.trim() || null,
+      notes: document.getElementById('notes').value.trim() || null,
+      status: 'new'
+    };
+ 
+    const { error } = await sb.from('bookings').insert([booking]);
+ 
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+ 
+    if(error){
+      console.error(error);
+      showStatus('error', dict.statusError);
+      return;
+    }
+ 
+    showStatus('success', dict.statusSuccess);
+    form.reset();
+    previewPickup.textContent = '—';
+    previewDropoff.textContent = '—';
+    previewPickup.parentElement.classList.remove('filled');
+    previewDropoff.parentElement.classList.remove('filled');
   });
-
+ 
   document.getElementById('callJohn').addEventListener('click', () => {
     window.location.href = `tel:${PHONE}`;
   });
-
+ 
   // clear red border on input
   form.addEventListener('input', (e) => {
     if(e.target.style) e.target.style.borderColor = '';
   });
 </script>
-
+ 
 </body>
 </html>
