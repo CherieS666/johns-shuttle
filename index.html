@@ -731,15 +731,22 @@
  
   function validateRequired(){
     const required = ['name','phone','pickup','dropoff','date','time'];
+    let firstEmpty = null;
+    let allValid = true;
     for(const id of required){
       const el = document.getElementById(id);
+      // Read el.value directly — Google Maps autocomplete fills the value
+      // without firing the native 'input' event, so we can't rely on state.
       if(!el.value.trim()){
-        el.focus();
         el.style.borderColor = '#c0392b';
-        return false;
+        if(!firstEmpty) firstEmpty = el;
+        allValid = false;
+      } else {
+        el.style.borderColor = '';
       }
     }
-    return true;
+    if(firstEmpty) firstEmpty.focus();
+    return allValid;
   }
  
   function showStatus(type, message){
