@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin - Bookings</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your real key -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAVKfary7LXwe4phYjwYgf-t96I8foxfM&libraries=places,geocoding&callback=initAdminMap" async defer></script>
   <style>
@@ -83,7 +83,7 @@
     .loading-state{text-align:center;padding:40px;color:var(--slate);}
     .table-wrap{overflow-x:auto;border:1px solid var(--line);}
     .notes-cell{max-width:160px;font-size:12.5px;color:var(--slate);}
- 
+
     /* ---- MAP MODAL ---- */
     .map-modal-overlay{
       display:none;position:fixed;inset:0;background:rgba(17,22,29,0.82);z-index:1000;
@@ -138,7 +138,7 @@
       <button id="refreshBtn">Refresh</button>
     </div>
   </div>
- 
+
   <!-- MAP MODAL -->
   <div class="map-modal-overlay" id="mapModalOverlay">
     <div class="map-modal">
@@ -318,17 +318,17 @@
     const ok = await checkAuth();
     if(ok) loadBookings();
   })();
- 
+
   /* ============================================================
      ADMIN MAP VIEW
      Opens a modal with all bookings geocoded and pinned on a map.
      Pickup = filled pin, Drop-off = outlined pin.
      Color = status colour.
   ============================================================ */
- 
+
   let adminMapInstance = null;
   let geocoderInstance = null;
- 
+
   // Status → pin colour
   const STATUS_COLORS = {
     new: '#f59e0b',
@@ -336,12 +336,12 @@
     completed: '#5C6470',
     cancelled: '#c0392b'
   };
- 
+
   function initAdminMap() {
     // Called by Google Maps API once loaded
     geocoderInstance = new google.maps.Geocoder();
   }
- 
+
   async function geocodeAddress(address) {
     return new Promise((resolve) => {
       if (!geocoderInstance) { resolve(null); return; }
@@ -354,7 +354,7 @@
       });
     });
   }
- 
+
   function makeMarkerIcon(color, isPickup) {
     // Returns a simple SVG pin — filled for pickup, ring for drop-off
     const fill = isPickup ? color : '#fff';
@@ -371,16 +371,16 @@
       anchor: new google.maps.Point(12, 34)
     };
   }
- 
+
   async function openMapView() {
     if (!window.google) {
       alert('Google Maps not loaded. Please add your API key to admin.html first.');
       return;
     }
- 
+
     const overlay = document.getElementById('mapModalOverlay');
     overlay.classList.add('open');
- 
+
     // Init map centred on Australia if first open
     if (!adminMapInstance) {
       adminMapInstance = new google.maps.Map(document.getElementById('adminMap'), {
@@ -394,16 +394,16 @@
         ]
       });
     }
- 
+
     // Geocode each booking (pickup + dropoff) and place markers
     const bookings = allBookings.slice(0, 50); // cap at 50 to avoid API overuse
     const infoWindow = new google.maps.InfoWindow();
     const bounds = new google.maps.LatLngBounds();
     let markerCount = 0;
- 
+
     for (const b of bookings) {
       const color = STATUS_COLORS[b.status || 'new'];
- 
+
       // Geocode pickup
       if (b.pickup) {
         const pos = await geocodeAddress(b.pickup);
@@ -430,7 +430,7 @@
           markerCount++;
         }
       }
- 
+
       // Geocode drop-off
       if (b.dropoff) {
         const pos = await geocodeAddress(b.dropoff);
@@ -458,12 +458,12 @@
         }
       }
     }
- 
+
     if (markerCount > 0) {
       adminMapInstance.fitBounds(bounds);
     }
   }
- 
+
   document.getElementById('mapBtn').addEventListener('click', openMapView);
   document.getElementById('mapModalClose').addEventListener('click', () => {
     document.getElementById('mapModalOverlay').classList.remove('open');
@@ -474,7 +474,7 @@
       document.getElementById('mapModalOverlay').classList.remove('open');
     }
   });
- 
+
   /* ============================================================
      PWA — Register Service Worker
   ============================================================ */
@@ -488,4 +488,3 @@
  
 </body>
 </html>
-
