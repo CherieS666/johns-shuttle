@@ -4,10 +4,20 @@
   "description": "Book your shuttle ride with John — door to door, one tap.",
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#11161D",
+  "background_color": "#1B2430",
   "theme_color": "#1B2430",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "icons/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
@@ -19,14 +29,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icons/screenshot.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ],
   "categories": ["travel", "transportation"],
