@@ -17,7 +17,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
   <!-- ===== GOOGLE MAPS (Places Autocomplete) =====
        Replace YOUR_GOOGLE_MAPS_API_KEY below with your real key.
@@ -554,7 +553,8 @@
 </footer>
  
  
-<script>
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
   /* ---------- TRANSLATIONS ---------- */
   const I18N = {
     en: {
@@ -724,9 +724,9 @@
   // The anon key below is meant to be public — it only allows INSERT on the
   // bookings table (see supabase-setup.sql). It cannot read, edit, or delete
   // any booking, including the one it just created.
-  const sb = window.supabase.createClient(
+  const sb = createClient(
     "https://fcsulkjgynoyebmplpms.supabase.co",
-    "sb_publishable_plDr8k-pynGbUJcdWS9UkQ_0wusZIUS"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI"
   );
  
   function validateRequired(){
@@ -814,7 +814,7 @@
      Biased to Australia. If the API key isn't set yet, this fails
      silently and the plain text inputs still work.
   ============================================================ */
-  function initGoogleMaps() {
+  window.initGoogleMaps = function() {
     const australiaBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(-44.0, 112.0),  // SW corner of Australia
       new google.maps.LatLng(-10.0, 154.0)   // NE corner of Australia
