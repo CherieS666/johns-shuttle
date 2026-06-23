@@ -8,6 +8,7 @@
   <!-- ===== PWA ===== -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1B2430">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="John's Shuttle">
@@ -24,7 +25,18 @@
        Enable: Maps JavaScript API + Places API in Google Cloud Console.
        Free tier covers ~28,000 autocomplete sessions/month.
   ===== -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8XSKcbaZa4ICRg9fkEnheBAYteZi8FEc&libraries=places&callback=initGoogleMaps" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8XSKcbaZa4ICRg9fkEnheBAYteZi8FEc&libraries=places" async defer></script>
+<script>
+  // Wait for Google Maps to load, then call our init function
+  window.addEventListener('load', function() {
+    var waitForMaps = setInterval(function() {
+      if (window.google && window.google.maps && window.initGoogleMaps) {
+        clearInterval(waitForMaps);
+        window.initGoogleMaps();
+      }
+    }, 100);
+  });
+</script>
 <style>
   :root{
     --asphalt:#1B2430;
