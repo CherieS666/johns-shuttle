@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John's Shuttle — Driver</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B2430">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="John's Shuttle">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --asphalt:#1B2430;
+    --asphalt-deep:#11161D;
+    --amber:#E8912D;
+    --amber-bright:#F5A845;
+    --off-white:#F7F5F0;
+    --slate:#5C6470;
+    --line:rgba(27,36,48,0.12);
+    --line-on-dark:rgba(247,245,240,0.12);
+    --green:#2F7A4D;
+    --red:#c0392b;
+    --card-bg:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--off-white);
+    color:var(--asphalt);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+    color:var(--asphalt);
+    text-transform:uppercase;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;}
+
+  html[data-lang="zh"] h1,
+  html[data-lang="zh"] h2,
+  html[data-lang="zh"] h3,
+  html[data-lang="zh"] .display{
+    font-family:'Noto Sans SC',sans-serif;
+    text-transform:none;
+    letter-spacing:0;
+  }
+  html[data-lang="zh"] body{font-family:'Noto Sans SC',sans-serif;}
+  html[data-lang="zh"] label,
+  html[data-lang="zh"] .eyebrow{text-transform:none;letter-spacing:0.02em;}
+
+  a{color:inherit;text-decoration:none;}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    background:var(--asphalt);
+    border-bottom:3px solid var(--amber);
+    padding:18px 20px;
+  }
+  .topbar-inner{
+    max-width:680px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:9px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;
+    color:var(--off-white);text-transform:uppercase;letter-spacing:0.02em;
+  }
+  html[data-lang="zh"] .brand{font-family:'Noto Sans SC',sans-serif;text-transform:none;}
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .lang-toggle{display:flex;border:1px solid var(--amber);}
+  .lang-toggle button{
+    background:transparent;border:none;color:var(--amber);
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;
+    padding:7px 12px;cursor:pointer;transition:all 0.2s ease;
+  }
+  .lang-toggle button.active{background:var(--amber);color:var(--asphalt);}
+  .logout-btn{
+    background:transparent;border:1px solid var(--line-on-dark);color:#9aa1ad;
+    padding:7px 13px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .logout-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+  main{padding:28px 0 60px;}
+
+  /* ---------- LOGIN ---------- */
+  .login-card{
+    background:var(--card-bg);border:1px solid var(--line);
+    padding:32px 28px;margin-top:40px;
+  }
+  .login-card h2{font-size:22px;margin-bottom:6px;}
+  .login-card p.sub{
+    font-family:'Inter',sans-serif;text-transform:none;font-weight:400;
+    color:var(--slate);font-size:14px;margin-bottom:24px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:0.05em;color:var(--slate);margin-bottom:6px;
+  }
+  html[data-lang="zh"] .field label{text-transform:none;font-family:'Inter',sans-serif;}
+  .field input{
+    width:100%;padding:12px 14px;border:1px solid var(--line);
+    font-family:'Inter',sans-serif;font-size:15px;background:var(--off-white);color:var(--asphalt);
+  }
+  .field input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber);}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 22px;border:none;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+    cursor:pointer;transition:opacity 0.15s ease;
+  }
+  .btn:active{opacity:0.8;}
+  .btn-amber{background:var(--amber);color:var(--asphalt);}
+  .btn-amber:hover{background:var(--amber-bright);}
+  .btn-full{width:100%;}
+  .btn-outline{background:transparent;border:1px solid var(--line);color:var(--asphalt);}
+  .btn-outline:hover{background:#f5f2ea;}
+  .btn[disabled]{opacity:0.5;cursor:not-allowed;}
+
+  .form-status{
+    margin-top:14px;padding:10px 12px;font-size:13.5px;display:none;
+  }
+  .form-status.error{background:rgba(192,57,43,0.1);color:var(--red);display:block;}
+  .form-status.success{background:rgba(47,122,77,0.12);color:var(--green);display:block;}
+
+  /* ---------- DRIVER NAME HEADER ---------- */
+  .driver-greeting{
+    margin-bottom:20px;
+  }
+  .driver-greeting h1{font-size:24px;margin-bottom:4px;}
+  .driver-greeting p{
+    font-family:'Inter',sans-serif;text-transform:none;font-weight:400;
+    color:var(--slate);font-size:14px;
+  }
+
+  /* ---------- JOB CARD ---------- */
+  .job-card{
+    background:var(--card-bg);border:1px solid var(--line);
+    margin-bottom:16px;overflow:hidden;
+  }
+  .job-card-head{
+    background:var(--asphalt);color:var(--off-white);
+    padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .job-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9aa1ad;}
+  .status-badge{
+    display:inline-block;padding:4px 10px;font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.03em;font-family:'Inter',sans-serif;
+  }
+  .status-new{background:#fff4e6;color:#8a5a14;}
+  .status-confirmed{background:rgba(47,122,77,0.15);color:#4FAE76;}
+  .status-enroute{background:rgba(232,145,45,0.18);color:var(--amber-bright);}
+  .status-completed{background:rgba(247,245,240,0.12);color:#9aa1ad;}
+  .status-cancelled{background:rgba(192,57,43,0.2);color:#e07568;}
+
+  .job-card-body{padding:18px;}
+  .route-row{display:flex;gap:0;margin-bottom:16px;}
+  .route-point{display:flex;flex-direction:column;gap:4px;flex-shrink:1;min-width:0;}
+  .route-point .dot{
+    width:13px;height:13px;border-radius:50%;
+    border:2px solid var(--amber);background:#fff;flex-shrink:0;
+  }
+  .route-point.filled .dot{background:var(--amber);}
+  .route-label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.05em;
+    text-transform:uppercase;color:var(--slate);
+  }
+  .route-value{
+    font-family:'Inter',sans-serif;font-size:14.5px;color:var(--asphalt);font-weight:500;
+    max-width:100%;overflow-wrap:break-word;word-break:break-word;
+  }
+  .route-track{
+    flex:0 0 auto;width:28px;height:2px;
+    background-image:linear-gradient(to right, var(--amber) 0%, var(--amber) 50%, transparent 50%);
+    background-size:12px 2px;background-repeat:repeat-x;
+    margin:0 10px;position:relative;top:-13px;opacity:0.5;
+  }
+  @media (max-width:420px){
+    .route-row{flex-direction:column;gap:14px;}
+    .route-track{display:none;}
+    .route-point{max-width:100%;}
+  }
+
+  .meta-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;
+    padding:14px 0;border-top:1px solid var(--line);margin-top:4px;
+  }
+  .meta-item .k{
+    font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;
+    letter-spacing:0.05em;color:var(--slate);margin-bottom:3px;
+  }
+  .meta-item .v{font-size:14px;color:var(--asphalt);}
+
+  .job-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .job-actions .btn{flex:1;min-width:140px;}
+  @media (max-width:380px){
+    .job-actions{flex-direction:column;}
+    .job-actions .btn{min-width:0;width:100%;}
+  }
+
+  .timeline{
+    display:flex;align-items:center;margin:16px 0 4px;padding:0 4px;
+  }
+  .timeline-step{flex:1;text-align:center;position:relative;}
+  .timeline-step .dot{
+    width:12px;height:12px;border-radius:50%;background:#e4e1d8;
+    margin:0 auto 6px;position:relative;z-index:2;
+  }
+  .timeline-step.done .dot{background:var(--amber);}
+  .timeline-step .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:var(--slate);font-family:'JetBrains Mono',monospace;}
+  .timeline-step.done .lbl{color:var(--asphalt);font-weight:600;}
+  .timeline-line{position:absolute;top:6px;left:0;right:0;height:2px;background:#e4e1d8;z-index:1;}
+  .timeline-line-fill{height:100%;background:var(--amber);transition:width 0.3s ease;}
+  .timeline{position:relative;}
+
+  .timestamp-note{
+    font-size:12px;color:var(--slate);margin-top:8px;font-family:'JetBrains Mono',monospace;
+  }
+
+  .empty-state{
+    text-align:center;padding:60px 20px;color:var(--slate);
+  }
+  .empty-state .icon{font-size:32px;margin-bottom:10px;}
+  .empty-state p{font-family:'Inter',sans-serif;text-transform:none;font-size:14px;}
+
+  .loading-state{text-align:center;padding:50px 20px;color:var(--slate);font-size:14px;}
+
+  .filter-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .filter-tabs button{
+    background:transparent;border:1px solid var(--line);color:var(--slate);
+    padding:8px 14px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .filter-tabs button.active{background:var(--asphalt);color:var(--off-white);border-color:var(--asphalt);}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="dot"></span><span data-i18n="brand">John's Shuttle</span></div>
+    <div class="topbar-right">
+      <div class="lang-toggle">
+        <button id="langEn" class="active">EN</button>
+        <button id="langZh">中文</button>
+      </div>
+      <button class="logout-btn" id="logoutBtn" style="display:none;" data-i18n="logout">Log out</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== ORDER ID LOOKUP (no login needed) ===== -->
+  <section id="lookupSection" class="login-card" style="margin-top:24px;">
+    <h2 data-i18n="lookupTitle">Have an order number?</h2>
+    <p class="sub" data-i18n="lookupSub">Enter it below to update that job directly — no login needed.</p>
+    <form id="lookupForm">
+      <div class="field">
+        <label data-i18n="orderIdLabel">Order number</label>
+        <input type="text" id="lookupOrderId" inputmode="numeric" placeholder="42" required>
+      </div>
+      <button type="submit" class="btn btn-amber btn-full" id="lookupBtn" data-i18n="lookupBtn">Find order</button>
+      <div class="form-status" id="lookupStatus"></div>
+    </form>
+    <div id="lookupResult" style="margin-top:16px;"></div>
+  </section>
+
+  <div style="text-align:center; margin:22px 0; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--slate); text-transform:uppercase; letter-spacing:0.06em;" data-i18n="orDivider">— or —</div>
+
+  <!-- ===== LOGIN VIEW ===== -->
+  <section id="loginView" class="login-card">
+    <h2 data-i18n="loginTitle">Driver login</h2>
+    <p class="sub" data-i18n="loginSub">Sign in with the email and password John gave you.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label data-i18n="emailLabel">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label data-i18n="passwordLabel">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-amber btn-full" id="loginBtn" data-i18n="loginBtn">Log in</button>
+      <div class="form-status" id="loginStatus"></div>
+    </form>
+  </section>
+
+  <!-- ===== DRIVER JOBS VIEW ===== -->
+  <section id="jobsView" style="display:none;">
+    <div class="driver-greeting">
+      <h1 id="driverGreetingName">—</h1>
+      <p data-i18n="greetingSub">Tap through your jobs as you go. Times are recorded automatically.</p>
+    </div>
+
+    <div class="filter-tabs" id="filterTabs">
+      <button data-filter="active" class="active" data-i18n="filterActive">Active</button>
+      <button data-filter="all" data-i18n="filterAll">All</button>
+    </div>
+
+    <div id="jobsList">
+      <div class="loading-state" data-i18n="loadingJobs">Loading your jobs…</div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(
+  "https://fcsulkjgynoyebmplpms.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI"
+);
+
+/* ---------- i18n ---------- */
+const I18N = {
+  en: {
+    brand: "John's Shuttle", logout: "Log out",
+    loginTitle: "Driver login", loginSub: "Sign in with the email and password John gave you.",
+    emailLabel: "Email", passwordLabel: "Password", loginBtn: "Log in",
+    loginError: "Could not log in — check your email and password.",
+    greetingSub: "Tap through your jobs as you go. Times are recorded automatically.",
+    filterActive: "Active", filterAll: "All",
+    loadingJobs: "Loading your jobs…",
+    noJobsActive: "No active jobs right now.", noJobsAll: "No jobs assigned to you yet.",
+    pickupLbl: "Pickup", dropoffLbl: "Drop-off",
+    dateLbl: "Date", timeLbl: "Time", paxLbl: "Passengers", flightLbl: "Flight",
+    depart: "I've departed", arrive: "Mark arrived",
+    departedAt: "Departed", arrivedAt: "Arrived",
+    callCustomer: "Call customer",
+    statusNew: "New", statusConfirmed: "Confirmed", statusEnroute: "En route",
+    statusCompleted: "Completed", statusCancelled: "Cancelled",
+    stepAssigned: "Assigned", stepDeparted: "Departed", stepArrived: "Arrived",
+    greetingHi: "Hi,",
+    lookupTitle: "Have an order number?", lookupSub: "Enter it below to update that job directly — no login needed.",
+    orderIdLabel: "Order number", lookupBtn: "Find order", orDivider: "— or —",
+    lookupNotFound: "Couldn't find an order with that number.",
+    lookupGenericError: "Something went wrong — try again.",
+    alreadyDeparted: "Already marked as departed — this order can't depart again.",
+    notYetDeparted: "Mark departed first before marking arrived.",
+    alreadyArrived: "This job is already marked complete.",
+  },
+  zh: {
+    brand: "浩一行", logout: "退出登录",
+    loginTitle: "司机登录", loginSub: "请使用 John 提供的邮箱和密码登录。",
+    emailLabel: "邮箱", passwordLabel: "密码", loginBtn: "登录",
+    loginError: "登录失败，请检查邮箱和密码。",
+    greetingSub: "按流程点击即可，时间将自动记录。",
+    filterActive: "进行中", filterAll: "全部",
+    loadingJobs: "正在加载您的任务…",
+    noJobsActive: "暂无进行中的任务。", noJobsAll: "暂无分配给您的任务。",
+    pickupLbl: "出发地", dropoffLbl: "目的地",
+    dateLbl: "日期", timeLbl: "时间", paxLbl: "乘客", flightLbl: "航班",
+    depart: "已出发", arrive: "标记抵达",
+    departedAt: "出发时间", arrivedAt: "抵达时间",
+    callCustomer: "联系客户",
+    statusNew: "新订单", statusConfirmed: "已确认", statusEnroute: "已出发",
+    statusCompleted: "已完成", statusCancelled: "已取消",
+    stepAssigned: "已分配", stepDeparted: "出发", stepArrived: "抵达",
+    greetingHi: "你好，",
+    lookupTitle: "有订单号吗？", lookupSub: "输入订单号即可直接更新该订单状态，无需登录。",
+    orderIdLabel: "订单号", lookupBtn: "查询订单", orDivider: "— 或 —",
+    lookupNotFound: "未找到该订单号。",
+    lookupGenericError: "出现错误，请重试。",
+    alreadyDeparted: "该订单已标记为出发，无法重复操作。",
+    notYetDeparted: "请先标记出发，再标记抵达。",
+    alreadyArrived: "该订单已标记完成。",
+  }
+};
+let currentLang = 'en';
+
+function applyLang(lang){
+  currentLang = lang;
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('data-lang', lang);
+  const dict = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.getElementById('langEn').classList.toggle('active', lang === 'en');
+  document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+  if(currentDriver) renderJobs();
+}
+document.getElementById('langEn').addEventListener('click', () => applyLang('en'));
+document.getElementById('langZh').addEventListener('click', () => applyLang('zh'));
+if(navigator.language && navigator.language.toLowerCase().startsWith('zh')) applyLang('zh');
+
+/* ---------- state ---------- */
+let currentDriver = null; // { id, name, phone }
+let myBookings = [];
+let currentFilter = 'active';
+
+const loginView = document.getElementById('loginView');
+const jobsView = document.getElementById('jobsView');
+const logoutBtn = document.getElementById('logoutBtn');
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function fmtTime(iso){
+  if(!iso) return null;
+  try{
+    return new Date(iso).toLocaleString(currentLang==='zh' ? 'zh-CN' : 'en-AU', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+  }catch(e){ return iso; }
+}
+
+/* ---------- auth ---------- */
+async function checkExistingSession(){
+  const { data } = await sb.auth.getSession();
+  if(data.session){
+    await loadDriverProfile(data.session.user.id);
+  }
+}
+
+async function loadDriverProfile(userId){
+  const { data, error } = await sb.from('drivers').select('*').eq('id', userId).single();
+  if(error || !data){
+    showLoginError(currentLang === 'zh' ? '未找到司机账户，请联系 John。' : 'No driver profile found — contact John.');
+    await sb.auth.signOut();
+    return;
+  }
+  currentDriver = data;
+  loginView.style.display = 'none';
+  jobsView.style.display = 'block';
+  logoutBtn.style.display = 'inline-block';
+  document.getElementById('driverGreetingName').textContent =
+    `${I18N[currentLang].greetingHi} ${currentDriver.name}`;
+  loadJobs();
+}
+
+function showLoginError(msg){
+  const el = document.getElementById('loginStatus');
+  el.textContent = msg;
+  el.className = 'form-status error';
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+
+  if(error){
+    showLoginError(I18N[currentLang].loginError);
+    return;
+  }
+  document.getElementById('loginStatus').className = 'form-status';
+  await loadDriverProfile(data.user.id);
+});
+
+logoutBtn.addEventListener('click', async () => {
+  await sb.auth.signOut();
+  currentDriver = null;
+  myBookings = [];
+  jobsView.style.display = 'none';
+  loginView.style.display = 'block';
+  logoutBtn.style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+});
+
+/* ---------- jobs ---------- */
+async function loadJobs(){
+  document.getElementById('jobsList').innerHTML =
+    `<div class="loading-state">${I18N[currentLang].loadingJobs}</div>`;
+
+  const { data, error } = await sb
+    .from('bookings')
+    .select('*')
+    .eq('driver_id', currentDriver.id)
+    .order('date', { ascending: true })
+    .order('time', { ascending: true });
+
+  if(error){
+    document.getElementById('jobsList').innerHTML =
+      `<div class="empty-state"><div class="icon">⚠️</div><p>${escapeHtml(error.message)}</p></div>`;
+    return;
+  }
+  myBookings = data || [];
+  renderJobs();
+}
+
+document.getElementById('filterTabs').addEventListener('click', (e) => {
+  if(e.target.tagName !== 'BUTTON') return;
+  currentFilter = e.target.getAttribute('data-filter');
+  document.querySelectorAll('#filterTabs button').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderJobs();
+});
+
+function renderJobs(){
+  const dict = I18N[currentLang];
+  const list = document.getElementById('jobsList');
+
+  let jobs = myBookings;
+  if(currentFilter === 'active'){
+    jobs = jobs.filter(b => !['completed','cancelled'].includes(b.status));
+  }
+
+  if(jobs.length === 0){
+    const msg = currentFilter === 'active' ? dict.noJobsActive : dict.noJobsAll;
+    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${msg}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = jobs.map(b => renderJobCard(b, dict)).join('');
+
+  list.querySelectorAll('.depart-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleDepart(btn.getAttribute('data-id')));
+  });
+  list.querySelectorAll('.arrive-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleArrive(btn.getAttribute('data-id')));
+  });
+}
+
+const STATUS_LABEL_KEY = {
+  new: 'statusNew', confirmed: 'statusConfirmed', enroute: 'statusEnroute',
+  completed: 'statusCompleted', cancelled: 'statusCancelled'
+};
+const STATUS_CLASS = {
+  new: 'status-new', confirmed: 'status-confirmed', enroute: 'status-enroute',
+  completed: 'status-completed', cancelled: 'status-cancelled'
+};
+
+function renderJobCard(b, dict){
+  const status = b.departed_at && !b.arrived_at ? 'enroute' : (b.status || 'new');
+  const statusCls = STATUS_CLASS[status] || 'status-new';
+  const statusLbl = dict[STATUS_LABEL_KEY[status]] || status;
+
+  const stepDone = { assigned: true, departed: !!b.departed_at, arrived: !!b.arrived_at };
+  const fillPct = stepDone.arrived ? 100 : (stepDone.departed ? 50 : 0);
+
+  const canDepart = !b.departed_at && status !== 'cancelled';
+  const canArrive = b.departed_at && !b.arrived_at && status !== 'cancelled';
+
+  return `
+    <div class="job-card">
+      <div class="job-card-head">
+        <span class="job-id">#${escapeHtml(String(b.id))}</span>
+        <span class="status-badge ${statusCls}">${escapeHtml(statusLbl)}</span>
+      </div>
+      <div class="job-card-body">
+        <div class="route-row">
+          <div class="route-point filled">
+            <span class="route-label">${dict.pickupLbl}</span>
+            <span class="route-value">${escapeHtml(b.pickup || '—')}</span>
+          </div>
+          <div class="route-track"></div>
+          <div class="route-point ${b.dropoff ? 'filled' : ''}">
+            <span class="route-label">${dict.dropoffLbl}</span>
+            <span class="route-value">${escapeHtml(b.dropoff || '—')}</span>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">${dict.dateLbl}</div><div class="v">${escapeHtml(b.date || '—')}</div></div>
+          <div class="meta-item"><div class="k">${dict.timeLbl}</div><div class="v">${escapeHtml(b.time || '—')}</div></div>
+          ${b.passengers ? `<div class="meta-item"><div class="k">${dict.paxLbl}</div><div class="v">${escapeHtml(b.passengers)}</div></div>` : ''}
+          ${b.flight ? `<div class="meta-item"><div class="k">${dict.flightLbl}</div><div class="v">${escapeHtml(b.flight)}</div></div>` : ''}
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-line" style="left:16.5%;right:16.5%;width:67%;">
+            <div class="timeline-line-fill" style="width:${fillPct}%;"></div>
+          </div>
+          <div class="timeline-step done"><div class="dot"></div><div class="lbl">${dict.stepAssigned}</div></div>
+          <div class="timeline-step ${stepDone.departed ? 'done':''}"><div class="dot"></div><div class="lbl">${dict.stepDeparted}</div></div>
+          <div class="timeline-step ${stepDone.arrived ? 'done':''}"><div class="dot"></div><div class="lbl">${dict.stepArrived}</div></div>
+        </div>
+
+        ${b.departed_at ? `<div class="timestamp-note">${dict.departedAt}: ${fmtTime(b.departed_at)}</div>` : ''}
+        ${b.arrived_at ? `<div class="timestamp-note">${dict.arrivedAt}: ${fmtTime(b.arrived_at)}</div>` : ''}
+
+        <div class="job-actions">
+          ${b.phone ? `<a class="btn btn-outline" href="tel:${escapeHtml(b.phone)}">${dict.callCustomer}</a>` : ''}
+          ${canDepart ? `<button class="btn btn-amber depart-btn" data-id="${b.id}">${dict.depart}</button>` : ''}
+          ${canArrive ? `<button class="btn btn-amber arrive-btn" data-id="${b.id}">${dict.arrive}</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function handleDepart(id){
+  const { error } = await sb.from('bookings')
+    .update({ departed_at: new Date().toISOString(), status: 'enroute' })
+    .eq('id', id);
+  if(error){ alert(error.message); return; }
+  await loadJobs();
+}
+
+async function handleArrive(id){
+  const { error } = await sb.from('bookings')
+    .update({ arrived_at: new Date().toISOString(), status: 'completed' })
+    .eq('id', id);
+  if(error){ alert(error.message); return; }
+  await loadJobs();
+}
+
+/* ---------- order ID lookup (no login required) ---------- */
+// Uses the get_booking_by_id / mark_booking_departed / mark_booking_arrived
+// RPC functions (see migration.sql) instead of direct table access, so this
+// path can never read or affect any booking other than the one looked up.
+
+function showLookupStatus(type, msg){
+  const el = document.getElementById('lookupStatus');
+  el.textContent = msg;
+  el.className = `form-status ${type}`;
+}
+
+function clearLookupStatus(){
+  const el = document.getElementById('lookupStatus');
+  el.textContent = '';
+  el.className = 'form-status';
+}
+
+async function fetchAndRenderLookup(orderId){
+  const dict = I18N[currentLang];
+  const { data, error } = await sb.rpc('get_booking_by_id', { p_id: orderId });
+
+  if(error){
+    showLookupStatus('error', dict.lookupGenericError);
+    document.getElementById('lookupResult').innerHTML = '';
+    return;
+  }
+  if(!data || data.length === 0){
+    showLookupStatus('error', dict.lookupNotFound);
+    document.getElementById('lookupResult').innerHTML = '';
+    return;
+  }
+
+  clearLookupStatus();
+  const booking = data[0];
+  document.getElementById('lookupResult').innerHTML = renderJobCard(booking, dict);
+
+  const result = document.getElementById('lookupResult');
+  const departBtn = result.querySelector('.depart-btn');
+  const arriveBtn = result.querySelector('.arrive-btn');
+  if(departBtn) departBtn.addEventListener('click', () => handleLookupDepart(orderId));
+  if(arriveBtn) arriveBtn.addEventListener('click', () => handleLookupArrive(orderId));
+}
+
+async function handleLookupDepart(orderId){
+  const dict = I18N[currentLang];
+  const { error } = await sb.rpc('mark_booking_departed', { p_id: orderId });
+  if(error){
+    showLookupStatus('error', dict.lookupGenericError);
+    return;
+  }
+  await fetchAndRenderLookup(orderId);
+}
+
+async function handleLookupArrive(orderId){
+  const dict = I18N[currentLang];
+  const { error } = await sb.rpc('mark_booking_arrived', { p_id: orderId });
+  if(error){
+    showLookupStatus('error', dict.lookupGenericError);
+    return;
+  }
+  await fetchAndRenderLookup(orderId);
+}
+
+document.getElementById('lookupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const raw = document.getElementById('lookupOrderId').value.trim();
+  const orderId = parseInt(raw, 10);
+  if(!raw || Number.isNaN(orderId)){
+    showLookupStatus('error', I18N[currentLang].lookupNotFound);
+    return;
+  }
+  const btn = document.getElementById('lookupBtn');
+  btn.disabled = true;
+  await fetchAndRenderLookup(orderId);
+  btn.disabled = false;
+});
+
+/* ---------- init ---------- */
+checkExistingSession();
+</script>
+
+</body>
+</html>
