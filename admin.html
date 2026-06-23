@@ -6,6 +6,8 @@ Admin · HTML
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin - Bookings</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your real key -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places,geocoding&callback=initAdminMap" async defer></script>
   <style>
     :root{
       --asphalt:#1B2430;
@@ -82,6 +84,35 @@ Admin · HTML
     .loading-state{text-align:center;padding:40px;color:var(--slate);}
     .table-wrap{overflow-x:auto;border:1px solid var(--line);}
     .notes-cell{max-width:160px;font-size:12.5px;color:var(--slate);}
+
+    /* ---- MAP MODAL ---- */
+    .map-modal-overlay{
+      display:none;position:fixed;inset:0;background:rgba(17,22,29,0.82);z-index:1000;
+      align-items:center;justify-content:center;
+    }
+    .map-modal-overlay.open{display:flex;}
+    .map-modal{
+      background:#fff;width:90vw;max-width:900px;height:75vh;
+      display:flex;flex-direction:column;border-top:4px solid var(--amber);
+      position:relative;
+    }
+    .map-modal-header{
+      background:var(--asphalt);color:var(--off-white);
+      padding:14px 20px;display:flex;justify-content:space-between;align-items:center;
+      font-size:15px;font-weight:600;
+    }
+    .map-modal-close{
+      background:transparent;border:1px solid var(--amber);color:var(--amber);
+      padding:6px 14px;font-size:13px;cursor:pointer;
+    }
+    .map-modal-close:hover{background:var(--amber);color:var(--asphalt);}
+    #adminMap{flex:1;width:100%;}
+    .map-legend{
+      padding:10px 16px;background:var(--asphalt-deep);color:#9aa1ad;
+      font-size:12px;display:flex;gap:18px;flex-wrap:wrap;
+    }
+    .map-legend span{display:flex;align-items:center;gap:6px;}
+    .legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
   </style>
 </head>
 <body>
@@ -103,7 +134,27 @@ Admin · HTML
       <button data-filter="completed">Completed</button>
       <button data-filter="cancelled">Cancelled</button>
     </div>
-    <button id="refreshBtn">Refresh</button>
+    <div style="display:flex;gap:8px;">
+      <button id="mapBtn">🗺 Map View</button>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+  </div>
+
+  <!-- MAP MODAL -->
+  <div class="map-modal-overlay" id="mapModalOverlay">
+    <div class="map-modal">
+      <div class="map-modal-header">
+        <span>Bookings Map</span>
+        <button class="map-modal-close" id="mapModalClose">Close</button>
+      </div>
+      <div id="adminMap"></div>
+      <div class="map-legend">
+        <span><span class="legend-dot" style="background:#f59e0b;"></span>New</span>
+        <span><span class="legend-dot" style="background:#2F7A4D;"></span>Confirmed</span>
+        <span><span class="legend-dot" style="background:#5C6470;"></span>Completed</span>
+        <span><span class="legend-dot" style="background:#c0392b;"></span>Cancelled</span>
+      </div>
+    </div>
   </div>
  
   <div class="table-wrap">
@@ -268,6 +319,172 @@ Admin · HTML
     const ok = await checkAuth();
     if(ok) loadBookings();
   })();
+
+  /* ============================================================
+     ADMIN MAP VIEW
+     Opens a modal with all bookings geocoded and pinned on a map.
+     Pickup = filled pin, Drop-off = outlined pin.
+     Color = status colour.
+  ============================================================ */
+
+  let adminMapInstance = null;
+  let geocoderInstance = null;
+
+  // Status → pin colour
+  const STATUS_COLORS = {
+    new: '#f59e0b',
+    confirmed: '#2F7A4D',
+    completed: '#5C6470',
+    cancelled: '#c0392b'
+  };
+
+  function initAdminMap() {
+    // Called by Google Maps API once loaded
+    geocoderInstance = new google.maps.Geocoder();
+  }
+
+  async function geocodeAddress(address) {
+    return new Promise((resolve) => {
+      if (!geocoderInstance) { resolve(null); return; }
+      geocoderInstance.geocode({ address: address + ', Australia' }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          resolve(results[0].geometry.location);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  function makeMarkerIcon(color, isPickup) {
+    // Returns a simple SVG pin — filled for pickup, ring for drop-off
+    const fill = isPickup ? color : '#fff';
+    const stroke = color;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="34" viewBox="0 0 24 34">
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 22 12 22s12-13 12-22C24 5.373 18.627 0 12 0z"
+            fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>
+          <circle cx="12" cy="12" r="5" fill="${isPickup ? '#fff' : color}"/>
+        </svg>`
+      )}`,
+      scaledSize: new google.maps.Size(24, 34),
+      anchor: new google.maps.Point(12, 34)
+    };
+  }
+
+  async function openMapView() {
+    if (!window.google) {
+      alert('Google Maps not loaded. Please add your API key to admin.html first.');
+      return;
+    }
+
+    const overlay = document.getElementById('mapModalOverlay');
+    overlay.classList.add('open');
+
+    // Init map centred on Australia if first open
+    if (!adminMapInstance) {
+      adminMapInstance = new google.maps.Map(document.getElementById('adminMap'), {
+        center: { lat: -33.8688, lng: 151.2093 }, // Sydney default
+        zoom: 10,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        styles: [
+          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+        ]
+      });
+    }
+
+    // Geocode each booking (pickup + dropoff) and place markers
+    const bookings = allBookings.slice(0, 50); // cap at 50 to avoid API overuse
+    const infoWindow = new google.maps.InfoWindow();
+    const bounds = new google.maps.LatLngBounds();
+    let markerCount = 0;
+
+    for (const b of bookings) {
+      const color = STATUS_COLORS[b.status || 'new'];
+
+      // Geocode pickup
+      if (b.pickup) {
+        const pos = await geocodeAddress(b.pickup);
+        if (pos) {
+          const marker = new google.maps.Marker({
+            position: pos,
+            map: adminMapInstance,
+            icon: makeMarkerIcon(color, true),
+            title: `${b.name} — Pickup: ${b.pickup}`
+          });
+          marker.addListener('click', () => {
+            infoWindow.setContent(`
+              <div style="font-family:sans-serif;font-size:13px;line-height:1.5;max-width:200px;">
+                <strong>${b.name}</strong><br>
+                📍 <em>Pickup</em>: ${b.pickup}<br>
+                🏁 Drop-off: ${b.dropoff}<br>
+                📅 ${b.date} ${b.time}<br>
+                <span style="color:${color};font-weight:600;text-transform:uppercase;font-size:11px;">${b.status || 'new'}</span>
+              </div>
+            `);
+            infoWindow.open(adminMapInstance, marker);
+          });
+          bounds.extend(pos);
+          markerCount++;
+        }
+      }
+
+      // Geocode drop-off
+      if (b.dropoff) {
+        const pos = await geocodeAddress(b.dropoff);
+        if (pos) {
+          const marker = new google.maps.Marker({
+            position: pos,
+            map: adminMapInstance,
+            icon: makeMarkerIcon(color, false),
+            title: `${b.name} — Drop-off: ${b.dropoff}`
+          });
+          marker.addListener('click', () => {
+            infoWindow.setContent(`
+              <div style="font-family:sans-serif;font-size:13px;line-height:1.5;max-width:200px;">
+                <strong>${b.name}</strong><br>
+                📍 Pickup: ${b.pickup}<br>
+                🏁 <em>Drop-off</em>: ${b.dropoff}<br>
+                📅 ${b.date} ${b.time}<br>
+                <span style="color:${color};font-weight:600;text-transform:uppercase;font-size:11px;">${b.status || 'new'}</span>
+              </div>
+            `);
+            infoWindow.open(adminMapInstance, marker);
+          });
+          bounds.extend(pos);
+          markerCount++;
+        }
+      }
+    }
+
+    if (markerCount > 0) {
+      adminMapInstance.fitBounds(bounds);
+    }
+  }
+
+  document.getElementById('mapBtn').addEventListener('click', openMapView);
+  document.getElementById('mapModalClose').addEventListener('click', () => {
+    document.getElementById('mapModalOverlay').classList.remove('open');
+  });
+  // Close on overlay click
+  document.getElementById('mapModalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('mapModalOverlay')) {
+      document.getElementById('mapModalOverlay').classList.remove('open');
+    }
+  });
+
+  /* ============================================================
+     PWA — Register Service Worker
+  ============================================================ */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .catch(err => console.warn('[PWA] SW registration failed:', err));
+    });
+  }
 </script>
  
 </body>
