@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin - Bookings</title>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your real key -->
+    <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your real key -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAVKfary7LXwe4phYjwYgf-t96I8foxfM&libraries=places,geocoding&callback=initAdminMap" async defer></script>
   <style>
     :root{
@@ -91,9 +90,13 @@
     }
     .map-modal-overlay.open{display:flex;}
     .map-modal{
-      background:#fff;width:90vw;max-width:900px;height:75vh;
+      background:#fff;width:95vw;max-width:900px;height:80vh;
       display:flex;flex-direction:column;border-top:4px solid var(--amber);
       position:relative;
+    }
+    @media(max-width:600px){
+      .map-modal{width:100vw;height:90vh;border-radius:0;}
+      .map-modal-overlay{align-items:flex-end;}
     }
     .map-modal-header{
       background:var(--asphalt);color:var(--off-white);
@@ -105,7 +108,7 @@
       padding:6px 14px;font-size:13px;cursor:pointer;
     }
     .map-modal-close:hover{background:var(--amber);color:var(--asphalt);}
-    #adminMap{flex:1;width:100%;}
+    #adminMap{flex:1;width:100%;min-height:300px;}
     .map-legend{
       padding:10px 16px;background:var(--asphalt-deep);color:#9aa1ad;
       font-size:12px;display:flex;gap:18px;flex-wrap:wrap;
@@ -180,8 +183,9 @@
   </div>
 </main>
  
-<script>
-  const sb = window.supabase.createClient(
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+  const sb = createClient(
     "https://fcsulkjgynoyebmplpms.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjc3Vsa2pneW5veWVibXBscG1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjczMTcsImV4cCI6MjA5NzY0MzMxN30.91Qw2w_ES9dKaeO37o8J29sh97Nzus1ZBth8fpnOTXI"
   );
@@ -337,7 +341,7 @@
     cancelled: '#c0392b'
   };
 
-  function initAdminMap() {
+  window.initAdminMap = function() {
     // Called by Google Maps API once loaded
     geocoderInstance = new google.maps.Geocoder();
   }
