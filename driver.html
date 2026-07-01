@@ -291,15 +291,11 @@
   <!-- ===== LOGIN VIEW ===== -->
   <section id="loginView" class="login-card">
     <h2 data-i18n="loginTitle">Driver login</h2>
-    <p class="sub" data-i18n="loginSub">Sign in with the email and password John gave you.</p>
+    <p class="sub" data-i18n="loginSub">Enter your mobile number to see your jobs.</p>
     <form id="loginForm">
       <div class="field">
-        <label data-i18n="emailLabel">Email</label>
-        <input type="email" id="loginEmail" autocomplete="username" required>
-      </div>
-      <div class="field">
-        <label data-i18n="passwordLabel">Password</label>
-        <input type="password" id="loginPassword" autocomplete="current-password" required>
+        <label data-i18n="phoneLabel">Mobile number</label>
+        <input type="tel" id="loginPhone" autocomplete="tel" inputmode="tel" placeholder="0400 000 000" required>
       </div>
       <button type="submit" class="btn btn-amber btn-full" id="loginBtn" data-i18n="loginBtn">Log in</button>
       <div class="form-status" id="loginStatus"></div>
@@ -337,9 +333,10 @@ const sb = createClient(
 const I18N = {
   en: {
     brand: "John's Shuttle", logout: "Log out",
-    loginTitle: "Driver login", loginSub: "Sign in with the email and password John gave you.",
-    emailLabel: "Email", passwordLabel: "Password", loginBtn: "Log in",
-    loginError: "Could not log in — check your email and password.",
+    loginTitle: "Driver login", loginSub: "Enter your mobile number to see your jobs.",
+    phoneLabel: "Mobile number", loginBtn: "Log in",
+    loginError: "Number not recognised — check it matches what John has for you.",
+    loginNotFound: "No driver found with that number.",
     greetingSub: "Tap through your jobs as you go. Times are recorded automatically.",
     filterActive: "Active", filterAll: "All",
     loadingJobs: "Loading your jobs…",
@@ -363,9 +360,10 @@ const I18N = {
   },
   zh: {
     brand: "浩一行", logout: "退出登录",
-    loginTitle: "司机登录", loginSub: "请使用 John 提供的邮箱和密码登录。",
-    emailLabel: "邮箱", passwordLabel: "密码", loginBtn: "登录",
-    loginError: "登录失败，请检查邮箱和密码。",
+    loginTitle: "司机登录", loginSub: "输入您的手机号码查看任务。",
+    phoneLabel: "手机号码", loginBtn: "登录",
+    loginError: "未找到该手机号，请确认与 John 登记的号码一致。",
+    loginNotFound: "未找到该手机号对应的司机。",
     greetingSub: "按流程点击即可，时间将自动记录。",
     filterActive: "进行中", filterAll: "全部",
     loadingJobs: "正在加载您的任务…",
@@ -430,22 +428,16 @@ function fmtTime(iso){
   }catch(e){ return iso; }
 }
 
-/* ---------- auth ---------- */
-async function checkExistingSession(){
-  const { data } = await sb.auth.getSession();
-  if(data.session){
-    await loadDriverProfile(data.session.user.id);
-  }
+/* ---------- auth: phone-number lookup, no Supabase Auth needed ---------- */
+
+// Normalise phone: strip spaces, dashes, brackets for consistent matching
+function normalisePhone(raw){
+  return raw.replace(/[\s\-().+]/g, '');
 }
 
-async function loadDriverProfile(userId){
-  const { data, error } = await sb.from('drivers').select('*').eq('id', userId).single();
-  if(error || !data){
-    showLoginError(currentLang === 'zh' ? '未找到司机账户，请联系 John。' : 'No driver profile found — contact John.');
-    await sb.auth.signOut();
-    return;
-  }
-  currentDriver = data;
+function showDriverView(driver){
+  currentDriver = driver;
+  sessionStorage.setItem('driverProfile', JSON.stringify(driver));
   loginView.style.display = 'none';
   jobsView.style.display = 'block';
   logoutBtn.style.display = 'inline-block';
@@ -460,33 +452,59 @@ function showLoginError(msg){
   el.className = 'form-status error';
 }
 
+// Restore session from sessionStorage on page load (survives refresh,
+// cleared when tab/browser closes -- reasonable for a driver-facing page)
+function checkExistingSession(){
+  const stored = sessionStorage.getItem('driverProfile');
+  if(stored){
+    try{
+      showDriverView(JSON.parse(stored));
+    }catch(e){
+      sessionStorage.removeItem('driverProfile');
+    }
+  }
+}
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
+  const raw = document.getElementById('loginPhone').value.trim();
+  const normInput = normalisePhone(raw);
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  // Fetch all active drivers and match by normalised phone client-side.
+  // This avoids needing a Postgres function just for normalisation, and
+  // the drivers list is small (a few rows), so fetching all is fine.
+  const { data, error } = await sb
+    .from('drivers')
+    .select('*')
+    .eq('active', true);
+
   btn.disabled = false;
 
   if(error){
     showLoginError(I18N[currentLang].loginError);
     return;
   }
+
+  const match = (data || []).find(d => normalisePhone(d.phone || '') === normInput);
+  if(!match){
+    showLoginError(I18N[currentLang].loginError);
+    return;
+  }
+
   document.getElementById('loginStatus').className = 'form-status';
-  await loadDriverProfile(data.user.id);
+  showDriverView(match);
 });
 
-logoutBtn.addEventListener('click', async () => {
-  await sb.auth.signOut();
+logoutBtn.addEventListener('click', () => {
   currentDriver = null;
   myBookings = [];
+  sessionStorage.removeItem('driverProfile');
   jobsView.style.display = 'none';
   loginView.style.display = 'block';
   logoutBtn.style.display = 'none';
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginPhone').value = '';
 });
 
 /* ---------- jobs ---------- */
@@ -495,11 +513,7 @@ async function loadJobs(){
     `<div class="loading-state">${I18N[currentLang].loadingJobs}</div>`;
 
   const { data, error } = await sb
-    .from('bookings')
-    .select('*')
-    .eq('driver_id', currentDriver.id)
-    .order('date', { ascending: true })
-    .order('time', { ascending: true });
+    .rpc('get_jobs_for_driver', { p_driver_id: currentDriver.id });
 
   if(error){
     document.getElementById('jobsList').innerHTML =
@@ -690,22 +704,45 @@ async function handleLookupArrive(orderId){
   await fetchAndRenderLookup(orderId);
 }
 
-document.getElementById('lookupForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const raw = document.getElementById('lookupOrderId').value.trim();
-  const orderId = parseInt(raw, 10);
-  if(!raw || Number.isNaN(orderId)){
+async function runLookup(rawId){
+  const raw = String(rawId).trim();
+  if(!raw){
     showLookupStatus('error', I18N[currentLang].lookupNotFound);
     return;
   }
+  const orderId = raw; // UUID — pass as string directly
   const btn = document.getElementById('lookupBtn');
   btn.disabled = true;
   await fetchAndRenderLookup(orderId);
   btn.disabled = false;
+}
+
+document.getElementById('lookupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  await runLookup(document.getElementById('lookupOrderId').value);
 });
+
+/* ---------- auto-lookup from URL (?id=42 or ?lang=zh&id=42) ---------- */
+function initFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const urlLang = params.get('lang');
+  if(urlLang === 'zh' || urlLang === 'en'){
+    applyLang(urlLang);
+  } else if(navigator.language && navigator.language.toLowerCase().startsWith('zh')){
+    applyLang('zh');
+  }
+
+  const urlId = params.get('id');
+  if(urlId){
+    document.getElementById('lookupOrderId').value = urlId;
+    document.getElementById('lookupSection').scrollIntoView({behavior:'auto', block:'start'});
+    runLookup(urlId);
+  }
+}
 
 /* ---------- init ---------- */
 checkExistingSession();
+initFromUrl();
 </script>
 
 </body>
