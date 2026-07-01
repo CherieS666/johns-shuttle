@@ -111,8 +111,64 @@
       text-align:center;padding:60px 20px;color:var(--slate);font-size:14px;
     }
     .loading-state{text-align:center;padding:40px;color:var(--slate);}
-    .table-wrap{overflow-x:auto;border:1px solid var(--line);}
+    /* table only on large screens */
+    .table-wrap{border:1px solid var(--line);overflow-x:hidden;}
     .notes-cell{max-width:160px;font-size:12.5px;color:var(--slate);}
+
+    /* ── booking cards (default / narrow screens) ── */
+    .booking-card{
+      background:#fff;border:1px solid var(--line);margin-bottom:12px;
+      padding:16px 18px;
+    }
+    .booking-card-head{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      gap:10px;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .booking-card-name{font-weight:600;font-size:15px;}
+    .booking-card-meta{
+      display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;
+      margin-bottom:12px;font-size:13px;
+    }
+    .booking-card-meta .k{
+      font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;
+      color:var(--slate);display:block;margin-bottom:1px;
+    }
+    .booking-card-meta .v{color:var(--asphalt);}
+    .booking-card-route{
+      background:var(--off-white);padding:10px 12px;margin-bottom:12px;font-size:13px;
+    }
+    .booking-card-route .route-lbl{
+      font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--slate);
+    }
+    .booking-card-controls{
+      display:flex;flex-direction:column;gap:8px;padding-top:12px;
+      border-top:1px solid var(--line);
+    }
+    .booking-card-controls label{
+      font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;
+      color:var(--slate);display:block;margin-bottom:4px;
+    }
+    .booking-card-controls select{
+      width:100%;font-size:13.5px;padding:8px 10px;
+      border:1px solid var(--line);background:#fff;
+    }
+    .booking-card-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+    .booking-card-actions button{flex:1;padding:9px 12px;font-size:13px;cursor:pointer;border:1px solid var(--line);background:#fff;}
+    .booking-card-actions .copy-msg-btn{border-color:var(--amber);color:var(--amber);}
+    .booking-card-actions .copy-msg-btn:hover{background:var(--amber);color:var(--asphalt);}
+    .booking-card-actions .copy-msg-btn:disabled{opacity:0.4;cursor:not-allowed;}
+    .booking-card-actions .delete-btn:hover{background:var(--red);color:#fff;border-color:var(--red);}
+
+    /* hide table on narrow, show cards */
+    .table-wrap table{display:none;}
+    .cards-wrap{display:block;}
+
+    /* on wide screens show table, hide cards */
+    @media(min-width:1200px){
+      .table-wrap{overflow-x:auto;}
+      .table-wrap table{display:table;}
+      .cards-wrap{display:none;}
+    }
 
     /* ---- MAP MODAL ---- */
     .map-modal-overlay{
@@ -221,6 +277,10 @@
       </tbody>
     </table>
   </div>
+
+  <div class="cards-wrap" id="bookingsCards">
+    <div class="loading-state" style="padding:40px;text-align:center;color:var(--slate);">Loading bookings…</div>
+  </div>
 </main>
  
 <script type="module">
@@ -328,55 +388,22 @@ ${link}`
     return div.innerHTML;
   }
 
-  // ── Render ────────────────────────────────────────────────────────────
-  function renderBookings(){
-    const tbody = document.getElementById('bookingsTable');
-    const filtered = currentFilter === 'all'
-      ? allBookings
-      : allBookings.filter(b => (b.status || 'new') === currentFilter);
+  // ── Shared driver options HTML ────────────────────────────────────────
+  function driverOptions(selectedId){
+    return `<option value="">— Unassigned —</option>` +
+      allDrivers.map(d => `<option value="${d.id}" ${selectedId === d.id ? 'selected' : ''}>${escapeHtml(d.name)}</option>`).join('');
+  }
 
-    if(filtered.length === 0){
-      tbody.innerHTML = '<tr><td colspan="12" class="empty-state">No bookings here yet.</td></tr>';
-      return;
-    }
+  // ── Shared status options HTML ─────────────────────────────────────────
+  function statusOptions(current){
+    const opts = ['new','confirmed','enroute','completed','cancelled'];
+    const labels = {new:'New',confirmed:'Confirmed',enroute:'En route',completed:'Completed',cancelled:'Cancelled'};
+    return opts.map(v => `<option value="${v}" ${(current||'new')===v?'selected':''}>${labels[v]}</option>`).join('');
+  }
 
-    tbody.innerHTML = filtered.map(b => {
-      const assignedDriver = allDrivers.find(d => d.id === b.driver_id);
-      return `
-      <tr data-id="${b.id}">
-        <td>${escapeHtml(b.name)}</td>
-        <td>${escapeHtml(b.phone)}</td>
-        <td>${escapeHtml(b.pickup)}</td>
-        <td>${escapeHtml(b.dropoff)}</td>
-        <td>${escapeHtml(b.date)}</td>
-        <td>${escapeHtml(b.time)}</td>
-        <td>${b.passengers || '-'}</td>
-        <td>${b.flight ? escapeHtml(b.flight) : '-'}</td>
-        <td class="notes-cell">${b.notes ? escapeHtml(b.notes) : '-'}</td>
-        <td>
-          <select class="driver-select" data-id="${b.id}">
-            <option value="">— Unassigned —</option>
-            ${allDrivers.map(d => `<option value="${d.id}" ${b.driver_id === d.id ? 'selected' : ''}>${escapeHtml(d.name)}</option>`).join('')}
-          </select>
-        </td>
-        <td>
-          <select class="status-select" data-id="${b.id}">
-            <option value="new" ${(b.status||'new') === 'new' ? 'selected' : ''}>New</option>
-            <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-            <option value="enroute" ${b.status === 'enroute' ? 'selected' : ''}>En route</option>
-            <option value="completed" ${b.status === 'completed' ? 'selected' : ''}>Completed</option>
-            <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-          </select>
-        </td>
-        <td class="row-actions">
-          <button class="copy-msg-btn" data-id="${b.id}" ${!b.driver_id ? 'disabled title="Assign a driver first"' : ''}>📋 Copy msg</button>
-          <button class="delete-btn" data-id="${b.id}">Delete</button>
-        </td>
-      </tr>`;
-    }).join('');
-
-    // ── Wire driver dropdown ───────────────────────────────────────────
-    tbody.querySelectorAll('.driver-select').forEach(sel => {
+  // ── Wire up events on a container (table tbody or cards div) ───────────
+  function wireEvents(container){
+    container.querySelectorAll('.driver-select').forEach(sel => {
       sel.addEventListener('change', async (e) => {
         const id = e.target.getAttribute('data-id');
         const newDriverId = e.target.value || null;
@@ -384,14 +411,11 @@ ${link}`
         if(error){ alert('Could not assign driver: ' + error.message); return; }
         const b = allBookings.find(x => x.id == id);
         if(b) b.driver_id = newDriverId;
-        // re-render so copy-msg button state updates
         renderBookings();
         toast(adminLang === 'zh' ? '司机已分配' : 'Driver assigned');
       });
     });
-
-    // ── Wire status dropdown ───────────────────────────────────────────
-    tbody.querySelectorAll('.status-select').forEach(sel => {
+    container.querySelectorAll('.status-select').forEach(sel => {
       sel.addEventListener('change', async (e) => {
         const id = e.target.getAttribute('data-id');
         const newStatus = e.target.value;
@@ -401,9 +425,7 @@ ${link}`
         if(b) b.status = newStatus;
       });
     });
-
-    // ── Wire copy-msg button ───────────────────────────────────────────
-    tbody.querySelectorAll('.copy-msg-btn').forEach(btn => {
+    container.querySelectorAll('.copy-msg-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.getAttribute('data-id');
         const b = allBookings.find(x => x.id == id);
@@ -414,7 +436,6 @@ ${link}`
         navigator.clipboard.writeText(msg).then(() => {
           toast(adminLang === 'zh' ? '✅ 消息已复制，请粘贴到微信发送' : '✅ Message copied — paste into WeChat');
         }).catch(() => {
-          // fallback: show in a textarea the admin can copy manually
           const ta = document.createElement('textarea');
           ta.value = msg;
           ta.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);width:90vw;max-width:500px;height:260px;z-index:300;padding:12px;font-size:13px;border:2px solid var(--amber);';
@@ -429,9 +450,7 @@ ${link}`
         });
       });
     });
-
-    // ── Wire delete button ─────────────────────────────────────────────
-    tbody.querySelectorAll('.delete-btn').forEach(btn => {
+    container.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.getAttribute('data-id');
         if(!confirm('Delete this booking? This cannot be undone.')) return;
@@ -441,6 +460,84 @@ ${link}`
         renderBookings();
       });
     });
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────
+  function renderBookings(){
+    const tbody = document.getElementById('bookingsTable');
+    const cardsWrap = document.getElementById('bookingsCards');
+    const filtered = currentFilter === 'all'
+      ? allBookings
+      : allBookings.filter(b => (b.status || 'new') === currentFilter);
+
+    if(filtered.length === 0){
+      tbody.innerHTML = '<tr><td colspan="12" class="empty-state">No bookings here yet.</td></tr>';
+      cardsWrap.innerHTML = '<div class="empty-state">No bookings here yet.</div>';
+      return;
+    }
+
+    // ── TABLE rows (shown on wide screens) ─────────────────────────────
+    tbody.innerHTML = filtered.map(b => `
+      <tr data-id="${b.id}">
+        <td>${escapeHtml(b.name)}</td>
+        <td>${escapeHtml(b.phone)}</td>
+        <td>${escapeHtml(b.pickup)}</td>
+        <td>${escapeHtml(b.dropoff)}</td>
+        <td>${escapeHtml(b.date)}</td>
+        <td>${escapeHtml(b.time)}</td>
+        <td>${b.passengers || '-'}</td>
+        <td>${b.flight ? escapeHtml(b.flight) : '-'}</td>
+        <td class="notes-cell">${b.notes ? escapeHtml(b.notes) : '-'}</td>
+        <td><select class="driver-select" data-id="${b.id}">${driverOptions(b.driver_id)}</select></td>
+        <td><select class="status-select" data-id="${b.id}">${statusOptions(b.status)}</select></td>
+        <td class="row-actions">
+          <button class="copy-msg-btn" data-id="${b.id}" ${!b.driver_id ? 'disabled title="Assign a driver first"' : ''}>📋 Copy msg</button>
+          <button class="delete-btn" data-id="${b.id}">Delete</button>
+        </td>
+      </tr>`).join('');
+    wireEvents(tbody);
+
+    // ── CARDS (shown on narrow screens) ───────────────────────────────
+    const STATUS_LABELS = {new:'New',confirmed:'Confirmed',enroute:'En route',completed:'Completed',cancelled:'Cancelled'};
+    const STATUS_CLS = {new:'status-new',confirmed:'status-confirmed',enroute:'status-enroute',completed:'status-completed',cancelled:'status-cancelled'};
+    cardsWrap.innerHTML = filtered.map(b => `
+      <div class="booking-card" data-id="${b.id}">
+        <div class="booking-card-head">
+          <div>
+            <div class="booking-card-name">${escapeHtml(b.name)}</div>
+            <div style="font-size:12px;color:var(--slate);margin-top:2px;">${escapeHtml(b.phone)}</div>
+          </div>
+          <span class="status-badge ${STATUS_CLS[b.status||'new']}">${STATUS_LABELS[b.status||'new']}</span>
+        </div>
+        <div class="booking-card-route">
+          <div class="route-lbl">📍 Pickup</div>
+          <div style="margin-bottom:6px;">${escapeHtml(b.pickup)}</div>
+          <div class="route-lbl">🏁 Drop-off</div>
+          <div>${escapeHtml(b.dropoff)}</div>
+        </div>
+        <div class="booking-card-meta">
+          <div><span class="k">Date</span><span class="v">${escapeHtml(b.date)}</span></div>
+          <div><span class="k">Time</span><span class="v">${escapeHtml(b.time)}</span></div>
+          <div><span class="k">Pax</span><span class="v">${b.passengers || '-'}</span></div>
+          <div><span class="k">Flight</span><span class="v">${b.flight ? escapeHtml(b.flight) : '-'}</span></div>
+          ${b.notes ? `<div style="grid-column:1/-1"><span class="k">Notes</span><span class="v">${escapeHtml(b.notes)}</span></div>` : ''}
+        </div>
+        <div class="booking-card-controls">
+          <div>
+            <label>Assign driver</label>
+            <select class="driver-select" data-id="${b.id}">${driverOptions(b.driver_id)}</select>
+          </div>
+          <div>
+            <label>Status</label>
+            <select class="status-select" data-id="${b.id}">${statusOptions(b.status)}</select>
+          </div>
+          <div class="booking-card-actions">
+            <button class="copy-msg-btn" data-id="${b.id}" ${!b.driver_id ? 'disabled title="Assign a driver first"' : ''}>📋 Copy dispatch msg</button>
+            <button class="delete-btn" data-id="${b.id}">Delete</button>
+          </div>
+        </div>
+      </div>`).join('');
+    wireEvents(cardsWrap);
   }
 
   // ── Filter tabs ───────────────────────────────────────────────────────
