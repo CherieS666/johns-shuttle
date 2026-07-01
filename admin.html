@@ -159,15 +159,25 @@
     .booking-card-actions .copy-msg-btn:disabled{opacity:0.4;cursor:not-allowed;}
     .booking-card-actions .delete-btn:hover{background:var(--red);color:#fff;border-color:var(--red);}
 
-    /* hide table on narrow, show cards */
-    .table-wrap table{display:none;}
+    /* always use cards, hide table entirely */
+    .table-wrap{display:none;}
     .cards-wrap{display:block;}
 
-    /* on wide screens show table, hide cards */
-    @media(min-width:1200px){
-      .table-wrap{overflow-x:auto;}
-      .table-wrap table{display:table;}
-      .cards-wrap{display:none;}
+    /* two-column card grid on wider screens */
+    @media(min-width:900px){
+      .cards-wrap{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:14px;
+        align-items:start;
+      }
+      .cards-wrap .empty-state,
+      .cards-wrap .loading-state{
+        grid-column:1/-1;
+      }
+    }
+    @media(min-width:1400px){
+      .cards-wrap{grid-template-columns:1fr 1fr 1fr;}
     }
 
     /* ---- MAP MODAL ---- */
